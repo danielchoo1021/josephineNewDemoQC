@@ -1,0 +1,28 @@
+/node_modules
+/public/hot
+/public/storage
+/public/uploads
+/storage/*.key
+/vendor
+.env
+.env.backup
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+/uploads
+/admin/uploads
+
+# Logs
+error_log
+*.log
+
+# Database Backup
+DBBackup/
+
+# Laravel temporary files
+/storage/framework/laravel-excel/*
+
+# macOS temporary files
+.DS_Store
