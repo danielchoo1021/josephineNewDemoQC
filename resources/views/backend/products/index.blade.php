@@ -213,7 +213,12 @@
 							<i class="bi bi-x" style="color: red;"></i>
 							@endif
 						</td>
-						<td><input type="checkbox" class="featured" value="{{ $product->id }}" {{ ($product->featured == 1) ? 'checked' : '' }}></td>
+						<td>
+							<input type="checkbox" class="featured" value="{{ $product->id }}" {{ ($product->featured == 1) ? 'checked' : '' }}>
+							<a href="{{ route('featured_settings', $product->id) }}" title="Home Page Featured Product Settings">
+								<i class="ace-icon bi bi-gear"></i> Settings
+							</a>
+						</td>
 						<td><input type="checkbox" class="birthday_promotion" value="{{ $product->id }}" {{ ($product->birthday_promotion == 1) ? 'checked' : '' }}></td>
 						<td>
 							@if(!empty($product->mall))

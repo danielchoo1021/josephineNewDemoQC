@@ -699,6 +699,49 @@ class ProductController extends Controller
         return redirect()->route('sold_quantity', $id);
     }
 
+    public function featured_settings($id)
+    {
+        $product = Product::find($id);
+        if(!isset($product) && empty($product)){
+            abort(404);
+        }
+
+        return view('backend.products.featured_settings', ['product'=>$product]);
+    }
+
+    public function save_featured_settings(Request $request, $id)
+    {
+        $translation_data = GlobalController::get_translations();
+        $product = Product::find($id);
+        if(!isset($product) && empty($product)){
+            abort(404);
+        }
+
+        $product->featured_display_name = $request->featured_display_name;
+        $product->featured_point_1 = $request->featured_point_1;
+        $product->featured_point_2 = $request->featured_point_2;
+        $product->featured_point_3 = $request->featured_point_3;
+
+        if($request->hasFile('featured_image')){
+            $file = $request->file('featured_image');
+            $ext = $file->getClientOriginalExtension();
+            $file_name = md5($file->getClientOriginalName().time()).'.'.$ext;
+            $destination = GlobalController::get_image_path('uploads/featured_products/'.$product->id);
+
+            if (!File::exists($destination)) {
+                File::makeDirectory($destination, 0777, true, true);
+            }
+
+            $file->move($destination, $file_name);
+            $product->featured_image = 'uploads/featured_products/'.$product->id.'/'.$file_name;
+        }
+
+        $product->save();
+
+        Toastr::success($translation_data['backendlang']['backendlang']['Update_Successfully'] ?? "Update Successfully!");
+        return redirect()->route('featured_settings', $id);
+    }
+
     /**
      * Display the specified resource.
      *

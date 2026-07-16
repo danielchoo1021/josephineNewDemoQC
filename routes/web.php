@@ -324,6 +324,9 @@ Route::group(['middleware' => 'auth:admin,merchant,staff'], function () {
 	Route::get('products/{id}/sold_quantity', 'Backend\ProductController@sold_quantity')->name('sold_quantity');
 	Route::post('products/{id}/submit_sold_quantity', 'Backend\ProductController@submit_sold_quantity')->name('submit_sold_quantity');
 
+	Route::get('products/{id}/featured_settings', 'Backend\ProductController@featured_settings')->name('featured_settings');
+	Route::post('products/{id}/featured_settings', 'Backend\ProductController@save_featured_settings')->name('save_featured_settings');
+
 	Route::get('quiz_records_index', 'Backend\QuizController@quiz_records_index')->name('quiz_records_index');
 	Route::get('quiz_records_view/{id}', 'Backend\QuizController@quiz_records_view')->name('quiz_records_view');
 
