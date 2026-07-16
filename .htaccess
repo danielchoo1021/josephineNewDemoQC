@@ -15,9 +15,16 @@
 
     # Serve static assets that only exist under public/ (frontend/, css/, js/,
     # uploads/, etc.) directly from there, without invoking PHP.
+    # Case 1: app served from a URL subfolder (e.g. local XAMPP at
+    # /josephineNewDemoQC/...) — strip the subfolder before checking public/.
     RewriteCond %{REQUEST_URI} ^/josephineNewDemoQC/(.+)$
     RewriteCond %{DOCUMENT_ROOT}/josephineNewDemoQC/public/%1 -f
     RewriteRule ^(.+)$ public/%1 [L]
+
+    # Case 2: app served from a domain root (e.g. production hosting), where
+    # DOCUMENT_ROOT already points at this project's root.
+    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -f
+    RewriteRule ^(.+)$ public/$1 [L]
 
     # Everything else (actual Laravel routes) goes through the root front
     # controller, so SCRIPT_NAME/REQUEST_URI stay consistent for routing.
