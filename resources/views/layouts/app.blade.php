@@ -1,5 +1,5 @@
 @php
-if($_SERVER['REMOTE_ADDR'] != '127.0.0.1'){
+if(!in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])){
     if(Request::secure()){
     }else{
     $url = "https://". $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];

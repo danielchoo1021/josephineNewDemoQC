@@ -105,13 +105,13 @@ class AuthServiceProvider extends ServiceProvider
             $localCheck = $_SERVER["SERVER_NAME"];
             $explo_check = explode('.', $localCheck);
             if($explo_check[0] == 'demoaccount'){
-                include('../resources/views/language/language.blade.php');
+                include(base_path('resources/views/language/language.blade.php'));
                 $productionURL = "https://newseller.vesson.my";
             }elseif($localCheck != '127.0.0.1'){
-                include('resources/views/language/language.blade.php');
+                include(base_path('resources/views/language/language.blade.php'));
                 $productionURL = "https://newseller.vesson.my";
             }else{
-                include('../resources/views/language/language.blade.php');
+                include(base_path('resources/views/language/language.blade.php'));
                 $productionURL = "http://".$localCheck.":8000";
             }
 

@@ -9,12 +9,18 @@
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-    # Redirect Trailing Slashes If Not A Folder...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_URI} (.+)/$
-    RewriteRule ^ %1 [L,R=301]
+    # Serve real files/directories at the project root directly (e.g. robots.txt)
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
 
-    # Handle Front Controller...
+    # Serve static assets that only exist under public/ (frontend/, css/, js/,
+    # uploads/, etc.) directly from there, without invoking PHP.
+    RewriteCond %{REQUEST_URI} ^/josephineNewDemoQC/(.+)$
+    RewriteCond %{DOCUMENT_ROOT}/josephineNewDemoQC/public/%1 -f
+    RewriteRule ^(.+)$ public/%1 [L]
+
+    # Everything else (actual Laravel routes) goes through the root front
+    # controller, so SCRIPT_NAME/REQUEST_URI stay consistent for routing.
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
