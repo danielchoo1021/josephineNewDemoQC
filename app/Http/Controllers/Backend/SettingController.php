@@ -56,6 +56,7 @@ use App\SettingWebsiteMessage;
 use App\SettingHeader;
 use App\SettingSecondBanner;
 use App\SettingHomeVideo;
+use App\SettingTrustPhoto;
 use App\SettingPaymentGateway;
 use App\SettingColour;
  
@@ -2922,6 +2923,61 @@ class SettingController extends Controller
 
         Toastr::success($translation_data['backendlang']['backendlang']['Setting Updated'] ?? 'Setting Updated');
         return redirect()->route('setting_home_video');
+    }
+
+    public function setting_trust_photo()
+    {
+        $trust_photo = SettingTrustPhoto::find(1);
+
+        return view('backend.settings.setting_trust_photo', compact('trust_photo'));
+    }
+
+    public function save_setting_trust_photo(Request $request)
+    {
+        $translation_data = GlobalController::get_translations();
+
+        $validator = Validator::make($request->all(), [
+            'image' => 'nullable|image|max:20480',
+        ], [
+            'image.max' => 'Image must not be larger than 20MB.',
+            'image.image' => 'File must be an image.',
+        ]);
+
+        if($validator->fails()){
+            return Redirect::back()->withErrors($validator);
+        }
+
+        try {
+            \DB::beginTransaction();
+
+            $setting = SettingTrustPhoto::find(1);
+
+            if(empty($setting)){
+                $setting = new SettingTrustPhoto();
+            }
+
+            if(!empty($request->file('image'))){
+                $file = $request->file('image');
+                $name = $file->getClientOriginalName();
+                $exp = explode(".", $name);
+                $file_ext = end($exp);
+                $name = md5($name . date('Y-m-d H:i:s')) . '.' . $file_ext;
+
+                $file->move(GlobalController::get_image_path("uploads/trust_photo/"), $name);
+                $setting->image = "uploads/trust_photo/" . $name;
+            }
+
+            $setting->save();
+
+            \DB::commit();
+        }catch (\Exception $e){
+            \DB::rollback();
+            Toastr::error($translation_data['backendlang']['backendlang']['Setting Updated'] ?? 'Setting Updated');
+            return redirect()->route('setting_trust_photo');
+        }
+
+        Toastr::success($translation_data['backendlang']['backendlang']['Setting Updated'] ?? 'Setting Updated');
+        return redirect()->route('setting_trust_photo');
     }
 
     public function setting_home_overview()

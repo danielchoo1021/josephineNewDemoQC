@@ -1,0 +1,233 @@
+/* Le_Almmora — Shop / ECommerce listing page
+   Aligns the shop page with the homepage's design system (Playfair Display +
+   Inter fonts, navy/sky-blue/gold palette). Scoped under .le-almmora-home,
+   which wraps this page's content only (see listing.blade.php). */
+
+/* ---- Base text colour reset ----
+   layouts/app.blade.php has a sitewide "h1,h2,h3,h4,h5,h6,b,div{color:#000}"
+   rule. Re-assert navy at a slightly higher specificity so headings/labels
+   on this page read navy like the homepage instead of black. */
+.le-almmora-home h1,
+.le-almmora-home h2,
+.le-almmora-home h3,
+.le-almmora-home h4,
+.le-almmora-home h5,
+.le-almmora-home h6,
+.le-almmora-home b,
+.le-almmora-home div {
+    color: #0b3b4a;
+}
+
+.le-almmora-home,
+.le-almmora-home .shop,
+.le-almmora-home .shop-sidebar,
+.le-almmora-home .shop-products {
+    font-family: Inter, "Helvetica Neue", Arial, sans-serif;
+}
+
+.le-almmora-home .shop {
+    padding-bottom: 80px;
+}
+
+.le-almmora-home hr {
+    border-top: 1px solid #dce8ea;
+}
+
+/* ---- Sidebar card ---- */
+.le-almmora-home .shop-sidebar__content {
+    background: #fff;
+    border: 1px solid #dce8ea;
+    border-radius: 18px;
+    padding: 28px 24px;
+    box-shadow: 0 10px 30px rgba(11, 59, 74, .06);
+}
+
+.le-almmora-home .shop-sidebar__section .section-title h2 {
+    font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+    font-weight: 600;
+    font-size: 20px;
+    text-transform: none;
+    letter-spacing: 0;
+    margin-bottom: 0;
+}
+
+.le-almmora-home .shop-sidebar__section .section-title h2 i {
+    color: #d6ad55;
+    font-size: 14px;
+}
+
+.le-almmora-home .shop-sidebar__section.-categories ul > li a,
+.le-almmora-home .shop-sidebar__section.-refine .shop-sidebar__section__item ul li label {
+    color: #0b3b4a;
+    transition: color .2s ease;
+}
+
+.le-almmora-home .shop-sidebar__section.-categories ul > li a:hover,
+.le-almmora-home .sub_categories a:hover {
+    color: #2f9fc6;
+}
+
+.le-almmora-home .sub_categories a.active {
+    color: #d6ad55;
+    font-weight: 600;
+}
+
+/* Search form */
+.le-almmora-home .shop-sidebar .form-control {
+    border-radius: 999px !important;
+    border: 1px solid #dce8ea;
+    min-height: 46px;
+    padding: 10px 20px;
+    color: #0b3b4a;
+}
+
+.le-almmora-home .shop-sidebar .form-control:focus {
+    border-color: #2f9fc6;
+    box-shadow: none;
+}
+
+.le-almmora-home .shop-sidebar .btn.set_button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    border-radius: 999px;
+    min-height: 46px;
+    font-weight: 600;
+    letter-spacing: .02em;
+    /* Fallback fill for when no admin button colour is configured
+       (Settings Manage > Theme > Body Design). The admin-set colour still
+       wins since that rule ships with !important; this is just a safety
+       net so the button is never invisible. */
+    background-color: #d6ad55;
+    border: 1px solid transparent;
+    margin-top: 12px;
+    box-shadow: 0 10px 24px rgba(11, 59, 74, .14);
+    transition: transform .3s ease, box-shadow .3s ease;
+}
+
+.le-almmora-home .shop-sidebar .btn.set_button:hover {
+    /* No background-color here on purpose: the sitewide .btn:hover rule
+       swaps the fill to white while the admin's hover_colour (!important)
+       recolours the text and border, matching Settings Manage > Theme. */
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(11, 59, 74, .2);
+}
+
+/* ---- Results row / per page ---- */
+.le-almmora-home .per_page {
+    border-radius: 999px !important;
+    border: 1px solid #dce8ea;
+    color: #0b3b4a;
+}
+
+/* ---- Filter chips ---- */
+.le-almmora-home .badge.bg-success {
+    background-color: #d6ad55 !important;
+    color: #0b3b4a !important;
+    border-radius: 999px;
+    font-weight: 600;
+}
+
+.le-almmora-home .badge.bg-success a i {
+    color: #0b3b4a !important;
+}
+
+/* ---- Product cards ---- */
+.le-almmora-home .container-box {
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(11, 59, 74, .08);
+    border: 1px solid rgba(11, 59, 74, .05);
+    color: #0b3b4a;
+    overflow: hidden;
+    transition: transform .3s ease, box-shadow .3s ease;
+}
+
+.le-almmora-home .container-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px rgba(11, 59, 74, .14);
+}
+
+.le-almmora-home .container-box a {
+    text-decoration: none;
+}
+
+.le-almmora-home .listing-image {
+    border-radius: 12px;
+}
+
+.le-almmora-home .product-type .-new,
+.le-almmora-home .product-type .-sale {
+    background-color: #d6ad55;
+    color: #0b3b4a;
+    border-radius: 999px;
+}
+
+.le-almmora-home .product-category {
+    color: #d6ad55;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    font-size: 11px;
+}
+
+.le-almmora-home .product-name {
+    color: #0b3b4a !important;
+    font-weight: 600;
+}
+
+.le-almmora-home .product-name:hover {
+    color: #2f9fc6 !important;
+}
+
+.le-almmora-home .product-price--main,
+.le-almmora-home .product__item__price {
+    color: #0b3b4a !important;
+    font-weight: 700;
+}
+
+.le-almmora-home .product__item__price.text-red {
+    color: #c0552e !important;
+}
+
+.le-almmora-home .product__item__price del {
+    color: #959595;
+    font-weight: 400;
+}
+
+.le-almmora-home .product-content__footer span {
+    color: #55636a;
+    font-size: 11px;
+}
+
+/* ---- Empty state ---- */
+.le-almmora-home .shop-products__gird ~ .form-group img,
+.le-almmora-home img.h-220 {
+    opacity: .9;
+}
+
+/* ---- Pagination ---- */
+.le-almmora-home .pagination {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.le-almmora-home .page-link {
+    border-radius: 999px !important;
+    border: 1px solid #dce8ea;
+    color: #0b3b4a !important;
+}
+
+.le-almmora-home .page-item.active .page-link {
+    background-color: #0b3b4a !important;
+    border-color: #0b3b4a !important;
+    color: #fff !important;
+}
+
+.le-almmora-home .page-link:hover {
+    background-color: #f1dca5;
+    border-color: #d6ad55;
+    color: #0b3b4a !important;
+}

@@ -95,6 +95,8 @@ use App\QuizRecord;
 use App\QuizRecordDetail;
 use App\Faq;
 use App\SettingHomeVideo;
+use App\Review;
+use App\SettingTrustPhoto;
 use App\ForgetPasswordRecord;
 use App\AdjustCashToTopup;
 use App\SettingPaymentGateway;
@@ -636,6 +638,12 @@ class HomeController extends Controller
         $video = [];
         $video[1] = SettingHomeVideo::find(1);
 
+        $reviews = Review::where('status', '1')
+                          ->orderBy(DB::raw('IF(sort_level IS NOT NULL, sort_level, 1000000)'), 'ASC')
+                          ->get();
+
+        $trust_photo = SettingTrustPhoto::find(1);
+
         $blogs = Blog::where('status', '1')->get();
 
         $quizes = Quiz::where('status', '1')->get();
@@ -660,6 +668,8 @@ class HomeController extends Controller
                                               'sold_amount',
                                               'products_home_page_slider',
                                               'video',
+                                              'reviews',
+                                              'trust_photo',
                                               'minSpend'));
     }
 

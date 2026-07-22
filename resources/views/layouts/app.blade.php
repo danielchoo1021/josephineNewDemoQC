@@ -68,7 +68,7 @@ if($data['explo_check'][0] == 'admindemo'){
 @if (!empty($data['button_colour']))
     <style type="text/css">
         .set_button {
-            background: #{{ $data['button_colour'] }} !important;
+            background: {{ '#'.ltrim($data['button_colour'] ?? '', '#') }} !important;
         }
     </style>
 @endif
@@ -76,7 +76,7 @@ if($data['explo_check'][0] == 'admindemo'){
 @if (!empty($data['text_colour']))
     <style type="text/css">
         .set_text {
-            color: #{{ $data['text_colour'] }} !important;
+            color: {{ '#'.ltrim($data['text_colour'] ?? '', '#') }} !important;
         }
     </style>
 @endif
@@ -84,12 +84,12 @@ if($data['explo_check'][0] == 'admindemo'){
 @if (!empty($data['hover_colour']))
     <style type="text/css">
         .set_text:hover {
-            color: #{{ $data['hover_colour'] }} !important;
+            color: {{ '#'.ltrim($data['hover_colour'] ?? '', '#') }} !important;
         }
 
         .set_button:hover,
         .set_button:focus {
-            border-color: #{{ $data['hover_colour'] }} !important;
+            border-color: {{ '#'.ltrim($data['hover_colour'] ?? '', '#') }} !important;
         }
     </style>
 @endif
@@ -97,7 +97,7 @@ if($data['explo_check'][0] == 'admindemo'){
 @if (!empty($data['header_announcement_text_colour']))
     <style type="text/css">
         .header_announcement_text {
-            color: #{{ $data['header_announcement_text_colour'] }} !important;
+            color: {{ '#'.ltrim($data['header_announcement_text_colour'] ?? '', '#') }} !important;
         }
     </style>
 @endif
@@ -105,7 +105,7 @@ if($data['explo_check'][0] == 'admindemo'){
 @if (!empty($data['header_announcement_background_colour']))
     <style type="text/css">
         .header_announcement_background {
-            background: #{{ $data['header_announcement_background_colour'] }} !important;
+            background: {{ '#'.ltrim($data['header_announcement_background_colour'] ?? '', '#') }} !important;
         }
     </style>
 @endif
@@ -113,7 +113,7 @@ if($data['explo_check'][0] == 'admindemo'){
 @if (!empty($data['header_background_colour']))
     <style type="text/css">
         .menu.-style-2.header_background {
-            background: #{{ $data['header_background_colour'] }} !important;
+            background: {{ '#'.ltrim($data['header_background_colour'] ?? '', '#') }} !important;
         }
     </style>
 @endif
@@ -121,7 +121,7 @@ if($data['explo_check'][0] == 'admindemo'){
 @if (!empty($data['header_text_colour']))
     <style type="text/css">
         .header_text {
-            color: #{{ $data['header_text_colour'] }} !important;
+            color: {{ '#'.ltrim($data['header_text_colour'] ?? '', '#') }} !important;
         }
     </style>
 @endif
@@ -129,7 +129,7 @@ if($data['explo_check'][0] == 'admindemo'){
 @if (!empty($data['header_text_hover_colour']))
     <style type="text/css">
         .header_text:hover {
-            color: #{{ $data['header_text_hover_colour'] }} !important;
+            color: {{ '#'.ltrim($data['header_text_hover_colour'] ?? '', '#') }} !important;
         }
     </style>
 @endif
@@ -137,7 +137,7 @@ if($data['explo_check'][0] == 'admindemo'){
 @if (!empty($data['footer_trademark_text_colour']))
     <style type="text/css">
         .footer_trademark_text {
-            color: #{{ $data['footer_trademark_text_colour'] }} !important;
+            color: {{ '#'.ltrim($data['footer_trademark_text_colour'] ?? '', '#') }} !important;
         }
     </style>
 @endif
@@ -145,7 +145,7 @@ if($data['explo_check'][0] == 'admindemo'){
 @if (!empty($data['footer_trademark_background_colour']))
     <style type="text/css">
         .footer_trademark_background {
-            background: #{{ $data['footer_trademark_background_colour'] }} !important;
+            background: {{ '#'.ltrim($data['footer_trademark_background_colour'] ?? '', '#') }} !important;
         }
     </style>
 @endif
@@ -153,7 +153,7 @@ if($data['explo_check'][0] == 'admindemo'){
 @if (!empty($data['footer_background_colour']))
     <style type="text/css">
         .footer_background {
-            background: #{{ $data['footer_background_colour'] }} !important;
+            background: {{ '#'.ltrim($data['footer_background_colour'] ?? '', '#') }} !important;
         }
     </style>
 @endif
@@ -161,7 +161,7 @@ if($data['explo_check'][0] == 'admindemo'){
 @if (!empty($data['footer_text_colour']))
     <style type="text/css">
         .footer_text {
-            color: #{{ $data['footer_text_colour'] }} !important;
+            color: {{ '#'.ltrim($data['footer_text_colour'] ?? '', '#') }} !important;
         }
     </style>
 @endif
@@ -169,7 +169,7 @@ if($data['explo_check'][0] == 'admindemo'){
 @if (!empty($data['footer_text_hover_colour']))
     <style type="text/css">
         .footer_text:hover {
-            color: #{{ $data['footer_text_hover_colour'] }} !important;
+            color: {{ '#'.ltrim($data['footer_text_hover_colour'] ?? '', '#') }} !important;
         }
     </style>
 @endif
@@ -186,7 +186,7 @@ body {
 }
 
 .nav-pills .nav-link.active {
-    background-color: #{{ $data['button_colour'] }} !important;
+    background-color: {{ '#'.ltrim($data['button_colour'] ?? '', '#') }} !important;
 }
     
 .text-editor-image img{
@@ -497,14 +497,14 @@ a:hover {
     font-size: 40px !important;
     font-family: font-round-bold !important;
     letter-spacing: 1px !important;
-    color: #{{ $data['text_colour'] }} !important;
+    color: {{ '#'.ltrim($data['text_colour'] ?? '', '#') }} !important;
 }
 
 .countdown-label {
     font-size: 14px !important;
     text-transform: lowercase !important;
     letter-spacing: 1px !important;
-    color: #{{ $data['text_colour'] }} !important;
+    color: {{ '#'.ltrim($data['text_colour'] ?? '', '#') }} !important;
     padding-bottom: 10px;
 }
 
@@ -2919,7 +2919,7 @@ li:hover .dropdown-menu {
 }
 
 .contact-info__item__icon {
-    color: #{{ $data['button_colour'] }};
+    color: {{ '#'.ltrim($data['button_colour'] ?? '', '#') }};
 }
 
 .hover-text-yellow {
@@ -2962,10 +2962,10 @@ li:hover .dropdown-menu {
     font-size: 11px;
 }
 
-.product-type .-new, 
+.product-type .-new,
 .product-type .-sale {
-    background-color: #{{ $data['button_colour'] }};
-    color: #{{ $data['text_colour'] }};
+    background-color: {{ '#'.ltrim($data['button_colour'] ?? '', '#') }};
+    color: {{ '#'.ltrim($data['text_colour'] ?? '', '#') }};
 }
 
 .mobile-mb-15 {
@@ -3962,6 +3962,42 @@ li:hover .dropdown-menu {
         </div>
     </div>
 
+    @if(session('registration_success'))
+    <div class="modal fade" id="registration-success-modal" tabindex="-1" role="dialog" aria-labelledby="registrationSuccessLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content" style="background-color: #fff;">
+                <div class="modal-header" style="border-bottom: none; align-items: center; flex-direction: column; padding-bottom: 0;">
+                    <i class="fa fa-check-circle" aria-hidden="true" style="font-size: 56px; color: #28a745; margin-bottom: 12px;"></i>
+                    <h4 id="registrationSuccessLabel">
+                        {{ isset($data['lang']['lang']['registration_successful']) ? $data['lang']['lang']['registration_successful'] :'Registration Successful'}}
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <p>{{ isset($data['lang']['lang']['registration_success_message']) ? $data['lang']['lang']['registration_success_message'] :'Your account has been created successfully. Please keep the login details below.'}}</p>
+                    <table class="table table-borderless" style="margin-bottom: 0;">
+                        <tr>
+                            <td><strong>{{ isset($data['lang']['lang']['login_id']) ? $data['lang']['lang']['login_id'] :'Login ID (Email)'}}</strong></td>
+                            <td>{{ session('registration_success')['login_id'] }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>{{ isset($data['lang']['lang']['member_code']) ? $data['lang']['lang']['member_code'] :'Account Code'}}</strong></td>
+                            <td>{{ session('registration_success')['code'] }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <a href="{{ route('home') }}" class="btn btn-shadow">
+                        {{ isset($data['lang']['lang']['back_to_home']) ? $data['lang']['lang']['back_to_home'] :'Back to Home'}}
+                    </a>
+                    <a href="{{ session('registration_success')['login_route'] }}" class="btn btn-primary">
+                        {{ isset($data['lang']['lang']['proceed_to_login']) ? $data['lang']['lang']['proceed_to_login'] :'Proceed to Login'}}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <div class="modal fade" id="upgrade-form" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content" style="box-shadow: 0 2px 10px #bdbdbd; background-color: #fff;">
@@ -4053,6 +4089,10 @@ li:hover .dropdown-menu {
 
         ele.closest('.modal').modal('toggle');
     });
+
+    @if(session('registration_success'))
+    $('#registration-success-modal').modal('show');
+    @endif
 
     // $(document).ready( function () {
     //     $('#picker').dateTimePicker();

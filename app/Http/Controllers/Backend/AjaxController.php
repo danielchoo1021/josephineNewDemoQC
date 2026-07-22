@@ -92,6 +92,7 @@ use App\SettingSecondBanner;
 use App\Quiz;
 use App\Blog;
 use App\Faq;
+use App\Review;
 
 use App\Http\Controllers\GlobalController;
 use App\Http\Controllers\HomeController;
@@ -7558,6 +7559,14 @@ class AjaxController extends Controller
       $input = $request->all();
       $input['status'] = $request->status;
       $table = Blog::find($request->row_id);
+      $table = $table->update($input);
+  }
+
+  public function ReviewStatus(Request $request)
+  {
+      $input = $request->all();
+      $input['status'] = $request->status;
+      $table = Review::find($request->row_id);
       $table = $table->update($input);
   }
 

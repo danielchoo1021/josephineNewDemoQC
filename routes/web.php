@@ -359,6 +359,7 @@ Route::group(['middleware' => 'auth:admin,merchant,staff'], function () {
 	Route::resource('quizs', 'Backend\QuizController', ['as'=> 'quiz']);
 	Route::resource('blogs', 'Backend\BlogController', ['as'=> 'blog']);
 	Route::resource('setting_all_faqs', 'Backend\FAQsController', ['as'=> 'setting_all_faq']);
+	Route::resource('reviews', 'Backend\ReviewController', ['as'=> 'review']);
 
 	Route::post('getProducts', 'Backend\AjaxController@getProducts')->name('getProducts');
 	Route::post('/actionProduct/', 'Backend\AjaxController@actionProduct')->name('actionProduct');
@@ -581,6 +582,9 @@ Route::group(['middleware' => 'auth:admin,merchant,staff'], function () {
 	Route::get('setting_home_video', 'Backend\SettingController@setting_home_video')->name('setting_home_video');
 	Route::post('save_setting_home_video', 'Backend\SettingController@save_setting_home_video')->name('save_setting_home_video');
 
+	Route::get('setting_trust_photo', 'Backend\SettingController@setting_trust_photo')->name('setting_trust_photo');
+	Route::post('save_setting_trust_photo', 'Backend\SettingController@save_setting_trust_photo')->name('save_setting_trust_photo');
+
 	Route::get('setting_faqs', 'Backend\AdminController@setting_faqs')->name('setting_faqs');
 	Route::post('setting_faqs', 'Backend\AdminController@save_setting_faqs')->name('setting_faqs');
 
@@ -802,6 +806,7 @@ Route::group(['middleware' => 'auth:admin,merchant,staff'], function () {
 	Route::post('/QuizStatus', 'Backend\AjaxController@QuizStatus')->name('QuizStatus');
 	Route::post('/BlogStatus', 'Backend\AjaxController@BlogStatus')->name('BlogStatus');
 	Route::post('/FAQsStatus', 'Backend\AjaxController@FAQsStatus')->name('FAQsStatus');
+	Route::post('/ReviewStatus', 'Backend\AjaxController@ReviewStatus')->name('ReviewStatus');
 
 	Route::post('/uploadBannerImage/', 'Backend\AjaxController@uploadBannerImage')->name('uploadBannerImage');
 	Route::get('/LoadBannerImage', 'Backend\AjaxController@LoadBannerImage')->name('LoadBannerImage');

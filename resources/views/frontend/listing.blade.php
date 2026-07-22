@@ -1,5 +1,12 @@
 @extends('layouts.app')
+
+@section('css')
+    <link rel="stylesheet" href="{{ asset('css/le-almmora-home.css') }}?v={{ file_exists(public_path('css/le-almmora-home.css')) ? filemtime(public_path('css/le-almmora-home.css')) : time() }}">
+    <link rel="stylesheet" href="{{ asset('css/le-almmora-shop.css') }}?v={{ file_exists(public_path('css/le-almmora-shop.css')) ? filemtime(public_path('css/le-almmora-shop.css')) : time() }}">
+@endsection
+
 @section('content')
+<main class="le-almmora-home">
 <div class="page-header" style="background-image: url({{ asset($data['setting_header']->shop_image) }});">
 
 </div>
@@ -16,7 +23,7 @@
                             </div>
                             <form method="GET" action="{{ route('listing') }}">
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="result" placeholder="{{ isset($data['lang']['lang']['search_products']) ? $data['lang']['lang']['search_products'] :'搜索产品' }}" style="border-radius: 0px;">
+                                    <input type="text" class="form-control" name="result" placeholder="{{ isset($data['lang']['lang']['search_products']) ? $data['lang']['lang']['search_products'] :'搜索产品' }}">
                                 </div>
                                 <button class="btn set_button set_text" style="font-size: 0.7125em;">
                                     <i class="fa fa-search"></i> {{ isset($data['lang']['lang']['search']) ? $data['lang']['lang']['search'] :'搜索' }}
@@ -244,7 +251,7 @@
                                                             </span>
                                                         @endif
                                                         <div class="product-content__footer" style="text-align: center; display: block;">
-                                                            <h5 class="product-price--main h-33" style="font-size: 15px; color: #000 !important;">
+                                                            <h5 class="product-price--main h-33" style="font-size: 15px;">
                                                                 @php
                                                                     $special_price_available = 0;
                                                                     if(!empty($get_pricing[$featured->id]['product_special_range']) && $get_pricing[$featured->id]['product_special_range'] != $get_pricing[$featured->id]['product_price_range']){
@@ -311,6 +318,7 @@
         </div>
     </div>
 </div>
+</main>
 @endsection
 
 @section('js')

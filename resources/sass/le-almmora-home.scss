@@ -995,6 +995,18 @@
         }
     }
 
+    .la-trust-strip__photo {
+        // Cream fill so admin-uploaded images with transparency (e.g. a logo)
+        // don't fall through to the page's plain white background.
+        background: $la-warm-white;
+
+        img {
+            object-fit: contain;
+            padding: 48px;
+            box-sizing: border-box;
+        }
+    }
+
     .la-trust-strip__play {
         position: absolute;
         top: 50%;
@@ -1079,6 +1091,65 @@
     .la-trust-strip__customer {
         font-size: 13px;
         color: $la-slate-text;
+    }
+
+    // Reviews carousel (WHAT OUR CUSTOMERS SAY)
+    .la-review-carousel__track {
+        position: relative;
+    }
+
+    .la-review-carousel__slide {
+        display: none;
+
+        &.la-is-active {
+            display: block;
+            animation: laFeaturedSlideFade .4s ease;
+        }
+    }
+
+    .la-review-carousel__controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        margin-top: 24px;
+
+        .la-featured-dots {
+            margin: 0;
+        }
+    }
+
+    .la-review-carousel__nav {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border: none;
+        border-radius: 50%;
+        background: $la-white;
+        color: $la-ocean-deep;
+        font-size: 13px;
+        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(11, 59, 74, .14);
+        transition: background-color .2s ease, color .2s ease;
+
+        &:hover {
+            background: $la-warm-gold;
+            color: $la-white;
+        }
+    }
+
+    .la-review-carousel__avatar {
+        display: block;
+        width: 48px;
+        height: 48px;
+        margin: 0 auto 8px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid $la-white;
+        box-shadow: 0 4px 14px rgba(11, 59, 74, .18);
     }
 
     // ---------------------------------------------------------------

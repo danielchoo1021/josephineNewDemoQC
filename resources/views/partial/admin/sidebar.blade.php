@@ -720,6 +720,7 @@
                                    Request::segment(1) == 'setting_website_messages' ||
                                    Request::segment(1) == 'setting_second_banner' ||
                                    Request::segment(1) == 'setting_home_video' ||
+                                   Request::segment(1) == 'setting_trust_photo' ||
                                    Request::segment(1) == 'setting_home_overview' ||
                                    Request::segment(1) == 'setting_featured_product_title' ||
                                    Request::segment(1) == 'setting_website_countries' ||
@@ -740,6 +741,7 @@
                                         Request::segment(1) == 'setting_second_banner' ||
                                         Request::segment(1) == 'setting_home_page' || 
                                         Request::segment(1) == 'setting_home_video' ||
+                                        Request::segment(1) == 'setting_trust_photo' ||
                                         Request::segment(1) == 'setting_home_overview'||
                                         Request::segment(1) == 'setting_header') ? 'active' : '' }}">
                                 <a href="#" class="submenu-link">
@@ -783,6 +785,14 @@
                                     <li class="submenu-item {{ (Request::segment(1) == 'setting_home_video') ? 'active' : '' }}">
                                         <a href="{{ route('setting_home_video') }}" class="submenu-link">
                                             {{ isset($data['backendlang']['backendlang']['Video']) ? $data['backendlang']['backendlang']['Video'] : ''  }}
+                                        </a>
+                                    </li>
+                                    @endif
+
+                                    @if(!empty($data['permission']['permission'][Auth::guard($data['userGuardRole'])->user()->permission_lvl]['setting-trust-photo']))
+                                    <li class="submenu-item {{ (Request::segment(1) == 'setting_trust_photo') ? 'active' : '' }}">
+                                        <a href="{{ route('setting_trust_photo') }}" class="submenu-link">
+                                            {{ isset($data['backendlang']['backendlang']['1/3_Images']) ? $data['backendlang']['backendlang']['1/3_Images'] : '1/3 Images'  }}
                                         </a>
                                     </li>
                                     @endif
@@ -994,6 +1004,15 @@
                     <a href="{{ route('setting_all_faq.setting_all_faqs.index') }}" class="sidebar-link">
                         <i class="bi bi-question-circle"></i>
                         <span>{{ isset($data['backendlang']['backendlang']['FAQs']) ? $data['backendlang']['backendlang']['FAQs'] : ''  }}</span>
+                    </a>
+                </li>
+                @endif
+
+                @if(!empty($data['permission']['permission'][Auth::guard($data['userGuardRole'])->user()->permission_lvl]['setting-reviews']))
+                <li class="sidebar-item {{ (Request::segment(1) == 'reviews') ? 'active' : '' }}">
+                    <a href="{{ route('review.reviews.index') }}" class="sidebar-link">
+                        <i class="bi bi-star-fill"></i>
+                        <span>{{ isset($data['backendlang']['backendlang']['Review_Settings']) ? $data['backendlang']['backendlang']['Review_Settings'] : 'Review Settings'  }}</span>
                     </a>
                 </li>
                 @endif

@@ -222,3 +222,58 @@
         });
     }
 })();
+
+(function () {
+    var reviewCarousel = document.querySelector('.le-almmora-home [data-la-review-carousel]');
+    if (!reviewCarousel) return;
+
+    var reviewSlides = reviewCarousel.querySelectorAll('[data-la-review-slide]');
+    var reviewDots = reviewCarousel.querySelectorAll('[data-la-review-dot]');
+    var reviewPrevBtn = reviewCarousel.querySelector('[data-la-review-prev]');
+    var reviewNextBtn = reviewCarousel.querySelector('[data-la-review-next]');
+    var reviewCount = reviewSlides.length;
+    var reviewActiveIndex = 0;
+
+    var goToReviewSlide = function (index) {
+        if (!reviewCount) return;
+        reviewActiveIndex = (index + reviewCount) % reviewCount;
+        Array.prototype.forEach.call(reviewSlides, function (slide, slideIndex) {
+            slide.classList.toggle('la-is-active', slideIndex === reviewActiveIndex);
+        });
+        Array.prototype.forEach.call(reviewDots, function (dot, dotIndex) {
+            var isActive = dotIndex === reviewActiveIndex;
+            dot.classList.toggle('la-is-active', isActive);
+            dot.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+    };
+
+    if (reviewPrevBtn) {
+        reviewPrevBtn.addEventListener('click', function () {
+            goToReviewSlide(reviewActiveIndex - 1);
+        });
+    }
+    if (reviewNextBtn) {
+        reviewNextBtn.addEventListener('click', function () {
+            goToReviewSlide(reviewActiveIndex + 1);
+        });
+    }
+    Array.prototype.forEach.call(reviewDots, function (dot, dotIndex) {
+        dot.addEventListener('click', function () {
+            goToReviewSlide(dotIndex);
+        });
+    });
+
+    // Swipe support so the carousel feels scrollable left/right on touch devices
+    var reviewTouchStartX = null;
+    reviewCarousel.addEventListener('touchstart', function (e) {
+        reviewTouchStartX = e.changedTouches[0].clientX;
+    }, { passive: true });
+    reviewCarousel.addEventListener('touchend', function (e) {
+        if (reviewTouchStartX === null) return;
+        var deltaX = e.changedTouches[0].clientX - reviewTouchStartX;
+        if (Math.abs(deltaX) > 40) {
+            goToReviewSlide(reviewActiveIndex + (deltaX < 0 ? 1 : -1));
+        }
+        reviewTouchStartX = null;
+    }, { passive: true });
+})();

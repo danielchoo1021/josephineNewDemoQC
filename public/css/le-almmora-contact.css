@@ -1,0 +1,185 @@
+/* Le_Almmora — Contact Us page
+   Aligns the contact page with the homepage's design system (Playfair
+   Display + Inter fonts, navy/sky-blue/gold palette). Scoped under
+   .le-almmora-home, which wraps this page's content only. */
+
+.le-almmora-home .la-contact__intro {
+    max-width: 640px;
+    margin: 16px auto 0;
+    text-align: center;
+    color: #55636a;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.le-almmora-home .la-contact__grid {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    margin-top: 48px;
+}
+
+@media (min-width: 992px) {
+    .le-almmora-home .la-contact__grid {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 48px;
+    }
+}
+
+/* Form card */
+.le-almmora-home .la-contact__form-card {
+    flex: 1 1 60%;
+    background: #fff;
+    border-radius: 24px;
+    padding: 40px 32px;
+    box-shadow: 0 18px 50px rgba(11, 59, 74, .08);
+    border: 1px solid rgba(11, 59, 74, .05);
+}
+
+.le-almmora-home .la-contact__card-heading {
+    font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+    font-weight: 600;
+    font-size: 24px;
+    color: #0b3b4a;
+    margin: 0 0 24px;
+}
+
+.le-almmora-home .la-contact__form-row {
+    margin-bottom: 18px;
+}
+
+.le-almmora-home .la-contact__form-row--split {
+    display: flex;
+    gap: 12px;
+}
+
+.le-almmora-home .la-contact__form-row--split .la-contact__input--select {
+    flex: 0 0 42%;
+}
+
+.le-almmora-home .la-contact__form-row--split input {
+    flex: 1 1 auto;
+}
+
+.le-almmora-home .la-contact__input {
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 20px;
+    border-radius: 12px;
+    border: 1px solid #dce8ea;
+    background: #fff;
+    color: #0b3b4a;
+    font-family: Inter, "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    transition: border-color .2s ease;
+}
+
+.le-almmora-home .la-contact__input:focus {
+    outline: none;
+    border-color: #2f9fc6;
+}
+
+.le-almmora-home .la-contact__textarea {
+    min-height: 140px;
+    padding-top: 14px;
+    resize: vertical;
+}
+
+.le-almmora-home .la-contact__submit {
+    width: 100%;
+    border: none;
+    margin-top: 4px;
+}
+
+/* Info column */
+.le-almmora-home .la-contact__info-col {
+    flex: 1 1 40%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.le-almmora-home .la-contact__info-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    background: #fff;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(11, 59, 74, .06);
+    border: 1px solid rgba(11, 59, 74, .05);
+}
+
+.le-almmora-home .la-contact__info-icon {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #f1dca5;
+    color: #0b3b4a;
+    font-size: 16px;
+}
+
+.le-almmora-home .la-contact__info-body h4 {
+    font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: #0b3b4a;
+    margin: 0 0 4px;
+}
+
+.le-almmora-home .la-contact__info-body p,
+.le-almmora-home .la-contact__info-body a {
+    font-size: 14px;
+    color: #55636a;
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+.le-almmora-home .la-contact__info-body a:hover {
+    color: #2f9fc6;
+}
+
+.le-almmora-home .la-contact__social {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.le-almmora-home .la-contact__social a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #fff;
+    color: #0b3b4a;
+    box-shadow: 0 4px 14px rgba(11, 59, 74, .12);
+    transition: background-color .2s ease, color .2s ease, transform .2s ease;
+}
+
+.le-almmora-home .la-contact__social a:hover {
+    background: #d6ad55;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+/* Map */
+.le-almmora-home .la-contact__map {
+    width: 100%;
+    height: 420px;
+    margin-top: 64px;
+    line-height: 0;
+}
+
+.le-almmora-home .la-contact__map iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+}

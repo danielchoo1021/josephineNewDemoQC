@@ -16,6 +16,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
+use Illuminate\Auth\Events\Registered;
 use DB, Auth, Session;
 
 class RegisterController extends Controller
@@ -48,6 +50,63 @@ class RegisterController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
+    }
+
+    /**
+     * Show the application registration form.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function showRegistrationForm()
+    {
+        $countries = GlobalController::global_countries();
+
+        $refferer_name = '';
+        if(!empty(request('p'))){
+            $merchant = Merchant::where(DB::raw('CONCAT(display_code, display_running_no)'), 'like', '%'.request('p').'%')->where('status', '1')->first();
+            $admin = Admin::where(DB::raw('CONCAT(display_code, display_running_no)'), 'like', '%'.request('p').'%')->where('status', '1')->first();
+            $user = User::where(DB::raw('CONCAT(display_code, display_running_no)'), 'like', '%'.request('p').'%')->where('status', '1')->where('lvl', '1')->first();
+
+            if(!empty($merchant->id)){
+                $refferer_name = $merchant->f_name;
+            }elseif(!empty($admin->id)){
+                $refferer_name = $admin->f_name;
+            }elseif(!empty($user->id)){
+                $refferer_name = $user->f_name;
+            }
+        }
+
+        return view('auth.register', compact('countries', 'refferer_name'));
+    }
+
+    /**
+     * Handle a registration request for the application.
+     *
+     * Overrides the default trait behaviour: instead of auto-logging the
+     * new account in and redirecting straight to the homepage, we flash
+     * the account's login details to the session so a success modal can
+     * show them and let the user choose to proceed to login or go home.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function register(Request $request)
+    {
+        $this->validator($request->all())->validate();
+
+        $user = $this->create($request->all());
+
+        event(new Registered($user));
+
+        $login_route = ($request->role == '1') ? route('login') : route('merchant_login');
+
+        Session::flash('registration_success', [
+            'login_id' => $user->email,
+            'code' => $user->display_code . $user->display_running_no,
+            'login_route' => $login_route,
+        ]);
+
+        return redirect($this->redirectPath());
     }
 
     /**
