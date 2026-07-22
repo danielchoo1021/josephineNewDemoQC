@@ -1,21 +1,23 @@
 {{-- Le_Almmora Homepage — Our Promise / Customer Stories --}}
 <section class="la-section la-trust-strip" aria-label="Our Promise and Customer Stories">
     <div class="la-trust-strip__grid">
-        <div class="la-trust-strip__video la-reveal{{ !empty($video[1]->image) ? ' js-la-video-panel' : '' }}">
+        <div class="la-trust-strip__video la-reveal">
             @if(!empty($video[1]->image))
-                <video muted loop playsinline poster="{{ asset('images/placeholder-500x600.svg') }}" aria-label="Our Promise">
+                <video autoplay muted loop playsinline poster="{{ asset('images/placeholder-500x600.svg') }}" aria-label="Our Promise">
                     <source src="{{ asset($video[1]->image) }}" type="video/mp4">
                 </video>
-                <button type="button" class="la-trust-strip__play js-la-video-play" aria-label="Play video">
-                    <i class="fa fa-play" aria-hidden="true"></i>
-                </button>
             @else
                 <img src="{{ asset('images/placeholder-500x600.svg') }}" alt="Our Promise" loading="lazy">
             @endif
 
+            @php
+                $la_is_cn = isset($_COOKIE['global_language']) && $_COOKIE['global_language'] == '1';
+                $la_video_title = $la_is_cn ? ($video[1]->title_cn ?? null) : ($video[1]->title ?? null);
+                $la_video_text = $la_is_cn ? ($video[1]->text_cn ?? null) : ($video[1]->text ?? null);
+            @endphp
             <div class="la-trust-strip__video-overlay">
-                <span class="la-eyebrow">OUR PROMISE</span>
-                <p>For a cleaner home and a better planet.</p>
+                <span class="la-eyebrow">{{ !empty($la_video_title) ? $la_video_title : ($la_is_cn ? '我们的承诺' : 'OUR PROMISE') }}</span>
+                <p>{{ !empty($la_video_text) ? $la_video_text : ($la_is_cn ? '为了更干净的家，也为了更好的地球。' : 'For a cleaner home and a better planet.') }}</p>
             </div>
         </div>
 

@@ -8,13 +8,15 @@
 				<div class="row">
 					<div class="col-12">
 						<div class="form-group container-box">
-							<h4>
-								{{ isset($data['backendlang']['backendlang']['First_Video']) ? $data['backendlang']['backendlang']['First_Video'] :'' }}
-							</h4>
+							<h4>Video</h4>
 							<hr>
 							<div class="row">
 								<div class="col-sm-12">
-									<input type="file" name="image[1]" class="form-control" accept="video/*">
+									<input type="file" name="image[1]" class="form-control" accept="video/mp4,video/quicktime,video/x-msvideo,video/x-ms-wmv">
+									<small class="form-text text-muted">Max file size: 20MB. Allowed formats: mp4, mov, avi, wmv.</small>
+									@error('image.1')
+										<div class="text-danger">{{ $message }}</div>
+									@enderror
 									@if(!empty($video[1]->image))
 										<video width="400" controls>
 											<source src="{{ asset($video[1]->image) }}" type="video/mp4">
@@ -26,46 +28,37 @@
 					</div>
 					<div class="col-12">
 						<div class="container-box">
-							<h4>
-								{{ isset($data['backendlang']['backendlang']['First_Description_EN']) ? $data['backendlang']['backendlang']['First_Description_EN'] :'' }}
-							</h4>
+							<h4>Title (English)</h4>
 							<hr>
 							<div class="form-group">
-								<textarea class="form-control" name="description[1]" id="description">{!! (!empty($video[1]->description)) ? $video[1]->description : '' !!}</textarea>
+								<input type="text" class="form-control" name="title[1]" value="{{ !empty($video[1]->title) ? $video[1]->title : '' }}" placeholder="e.g. OUR PROMISE">
 							</div>
 						</div>
 					</div>
 					<div class="col-12">
 						<div class="container-box">
-							<h4>
-								{{ isset($data['backendlang']['backendlang']['First_Description_CN']) ? $data['backendlang']['backendlang']['First_Description_CN'] :'' }}
-							</h4>
+							<h4>Title (中文)</h4>
 							<hr>
 							<div class="form-group">
-								<textarea class="form-control" name="description_cn[1]" id="description_cn">{!! (!empty($video[1]->description_cn)) ? $video[1]->description_cn : '' !!}</textarea>
+								<input type="text" class="form-control" name="title_cn[1]" value="{{ !empty($video[1]->title_cn) ? $video[1]->title_cn : '' }}" placeholder="例：我们的承诺">
 							</div>
 						</div>
 					</div>
-				</div>
-			</div>
-			<hr>
-			<div class="form-group pt-4">
-				<div class="row">
 					<div class="col-12">
-						<div class="form-group container-box">
-							<h4>
-								{{ isset($data['backendlang']['backendlang']['Second_Video']) ? $data['backendlang']['backendlang']['Second_Video'] :'' }}
-							</h4>
+						<div class="container-box">
+							<h4>Text (English)</h4>
 							<hr>
-							<div class="row">
-								<div class="col-sm-12">
-									<input type="file" name="image[2]" class="form-control" accept="video/*">
-									@if(!empty($video[2]->image))
-										<video width="400" controls>
-											<source src="{{ asset($video[2]->image) }}" type="video/mp4">
-										</video>
-									@endif
-								</div>
+							<div class="form-group">
+								<input type="text" class="form-control" name="text[1]" value="{{ !empty($video[1]->text) ? $video[1]->text : '' }}" placeholder="e.g. For a cleaner home and a better planet.">
+							</div>
+						</div>
+					</div>
+					<div class="col-12">
+						<div class="container-box">
+							<h4>Text (中文)</h4>
+							<hr>
+							<div class="form-group">
+								<input type="text" class="form-control" name="text_cn[1]" value="{{ !empty($video[1]->text_cn) ? $video[1]->text_cn : '' }}" placeholder="例：为了更干净的家，也为了更好的地球。">
 							</div>
 						</div>
 					</div>
@@ -88,29 +81,23 @@
 	$('.submit-form-btn .btn-outline-primary').click( function(e){
     	e.preventDefault();
 
+    	var maxSize = 20 * 1024 * 1024;
+    	var oversized = false;
+
+    	$('#setting-merchant-form input[type="file"]').each(function(){
+    		if(this.files.length && this.files[0].size > maxSize){
+    			oversized = true;
+    		}
+    	});
+
+    	if(oversized){
+    		e.stopPropagation();
+    		$('.loading-gif').hide();
+    		alert('Video file size must not exceed 20MB.');
+    		return;
+    	}
+
     	$('#setting-merchant-form').submit();
     });
-
-	var descriptionUrl = '{{ route("CKEditorUploadImage", ["_token" => csrf_token()]) }}';
-
-	var description = CKEDITOR.instances["description"];
-
-    if(!description){
-      	CKEDITOR.replace( 'description',{
-          	filebrowserUploadUrl: descriptionUrl,
-          	filebrowserUploadMethod: 'form'
-      	});
-  	}
-
-	var description_cnUrl = '{{ route("CKEditorUploadImage", ["_token" => csrf_token()]) }}';
-
-	var description_cn = CKEDITOR.instances["description_cn"];
-
-    if(!description_cn){
-      	CKEDITOR.replace( 'description_cn',{
-          	filebrowserUploadUrl: description_cnUrl,
-          	filebrowserUploadMethod: 'form'
-      	});
-  	}
 </script>
 @endsection

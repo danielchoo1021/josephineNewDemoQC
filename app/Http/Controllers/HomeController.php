@@ -634,9 +634,7 @@ class HomeController extends Controller
                                              ->get();
 
         $video = [];
-        for($x = 1; $x <= 2; $x++){
-            $video[$x] = SettingHomeVideo::find($x); 
-        }
+        $video[1] = SettingHomeVideo::find(1);
 
         $blogs = Blog::where('status', '1')->get();
 

@@ -2866,49 +2866,57 @@ class SettingController extends Controller
     public function setting_home_video()
     {
         $video = [];
-        for($x = 1; $x <= 7; $x++){
-            $video[$x] = SettingHomeVideo::find($x); 
-        }
+        $video[1] = SettingHomeVideo::find(1);
 
         return view('backend.settings.setting_home_video', compact('video'));
     }
 
     public function save_setting_home_video(Request $request)
     {
-        $translation_data = GlobalController::get_translations();   
+        $translation_data = GlobalController::get_translations();
+
+        $validator = Validator::make($request->all(), [
+            'image.1' => 'nullable|mimes:mp4,mov,avi,wmv|max:20480',
+        ], [
+            'image.1.max' => 'Video must not be larger than 20MB.',
+            'image.1.mimes' => 'Video must be a file of type: mp4, mov, avi, wmv.',
+        ]);
+
+        if($validator->fails()){
+            return Redirect::back()->withErrors($validator);
+        }
+
         try {
             \DB::beginTransaction();
 
-            for($x = 1; $x <= 2; $x++){
-                $setting = SettingHomeVideo::find($x);
+            $setting = SettingHomeVideo::find(1);
 
-                if(empty($setting)){
-                    $setting = new SettingHomeVideo();
-                }
-
-                if(!empty($request->file('image')[$x])){
-                    $file = $request->file('image')[$x]; 
-                    $name = $file->getClientOriginalName();
-                    $exp = explode(".", $name);
-                    $file_ext = end($exp);
-                    $name = md5($name . date('Y-m-d H:i:s')) . '.' . $file_ext;
-
-                    $file->move(GlobalController::get_image_path("uploads/home_page_video/"), $name);
-                    $setting->image = "uploads/home_page_video/" . $name;
-                }
-
-                if($x == 1){
-                    $setting->description = !empty($request->description[$x]) ? $request->description[$x] : null;
-                    $setting->description_cn = !empty($request->description_cn[$x]) ? $request->description_cn[$x] : null;
-                }
-
-                $setting->save();
+            if(empty($setting)){
+                $setting = new SettingHomeVideo();
             }
+
+            if(!empty($request->file('image')[1])){
+                $file = $request->file('image')[1];
+                $name = $file->getClientOriginalName();
+                $exp = explode(".", $name);
+                $file_ext = end($exp);
+                $name = md5($name . date('Y-m-d H:i:s')) . '.' . $file_ext;
+
+                $file->move(GlobalController::get_image_path("uploads/home_page_video/"), $name);
+                $setting->image = "uploads/home_page_video/" . $name;
+            }
+
+            $setting->title = !empty($request->title[1]) ? $request->title[1] : null;
+            $setting->title_cn = !empty($request->title_cn[1]) ? $request->title_cn[1] : null;
+            $setting->text = !empty($request->text[1]) ? $request->text[1] : null;
+            $setting->text_cn = !empty($request->text_cn[1]) ? $request->text_cn[1] : null;
+
+            $setting->save();
 
             \DB::commit();
         }catch (\Exception $e){
             \DB::rollback();
-            Toastr::error($translation_data['backendlang']['backendlang']['Setting Updated'] ?? 'Setting Updated'); 
+            Toastr::error($translation_data['backendlang']['backendlang']['Setting Updated'] ?? 'Setting Updated');
             return redirect()->route('setting_home_video');
         }
 

@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class SettingHomeVideo extends Model
 {
     protected $fillable = [
-        'image', 'description', 'description_cn', 'status'
+        'image', 'title', 'title_cn', 'text', 'text_cn', 'description', 'description_cn', 'status'
     ];
 }
