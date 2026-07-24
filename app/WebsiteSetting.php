@@ -39,6 +39,7 @@ class WebsiteSetting extends Model
         'bank_holder_name',
         'type_set_shipping_fee',
         'setting_featured_product_title',
-        'free_shipping_threshold'
+        'free_shipping_threshold',
+        'whatsapp_notification_enable'
     ];
 }

@@ -4537,79 +4537,77 @@ class GlobalController extends Controller
         return $countries;
     }
 
-    public static function send_order_notification($no)
+    public static function sanitize_whatsapp_phone($country_code, $phone)
     {
-        try{
-            \DB::beginTransaction();
+        $country_code = preg_replace('/\D/', '', (string) $country_code);
+        $phone = preg_replace('/\D/', '', (string) $phone);
+        $phone = ltrim($phone, '0');
 
+        return $country_code.$phone;
+    }
+
+    public static function send_aisoceo_payment_notification($no)
+    {
+        try {
             $website_setting = WebsiteSetting::find(1);
+            if (!empty($website_setting->id) && $website_setting->whatsapp_notification_enable == 0) {
+                return 'ok';
+            }
 
             $transaction = Transaction::where('transaction_no', $no)->first();
-            if(empty($transaction->id)){
+            if (empty($transaction->id)) {
                 throw new \Exception('Error Transaction');
             }
 
-            if(!empty($transaction->country_code) && !empty($transaction->phone)){
-                if($transaction->phone[0] === '0'){
-                    $send_phone = $transaction->country_code.$transaction->phone;
-                }else{
-                    $send_phone = $transaction->country_code.'0'.$transaction->phone;
-                }
+            $transaction_details = TransactionDetail::where('transaction_id', $transaction->id)->get();
+
+            $items = [];
+            foreach ($transaction_details as $detail) {
+                $items[] = [
+                    'name' => $detail->product_name,
+                    'qty' => (int) $detail->quantity,
+                    'price' => (float) $detail->unit_price,
+                ];
             }
 
-            $language = $_COOKIE['global_language'] ?? '';
-            if($language === '1'){
-                $message = "来自 ".$website_setting->website_name."\n"
-                           . "我们已收到您的订单!\n"
-                           . "您的订单编号是: ".$no."\n\n"
-                           . "请登录您的账户查看订单状态.\n\n"
-                           . "谢谢您.";
+            $payload = [
+                'order_id' => $transaction->transaction_no,
+                'order_number' => $transaction->order_number ?: $transaction->transaction_no,
+                'status' => 'paid',
+                'total' => (float) $transaction->grand_total,
+                'currency' => 'MYR',
+                'name' => $transaction->address_name ?: 'Valued Customer',
+                'phone' => self::sanitize_whatsapp_phone($transaction->country_code, $transaction->phone),
+                'email' => $transaction->email,
+                'items' => $items,
+            ];
 
-            }else{
-                $message = "From ".$website_setting->website_name."\n"
-                           . "We have receive your order!\n"
-                           . "Your Order No: ".$no."\n\n"
-                           . "Kindly Login to your account to check the order status.\n\n"
-                           . "Thank You.";
-            }
+            $webhook_url = config('services.aisoceo.webhook_url').'?shop_key='.config('services.aisoceo.shop_key');
 
-            $params=array(
-                'token' => 'bibn00stpx5dw8h7',
-                'to' => $send_phone,
-                'body' => $message
-            );
-            $curl = curl_init();
-            curl_setopt_array($curl, array(
-              CURLOPT_URL => "https://api.ultramsg.com/instance66054/messages/chat",
-              CURLOPT_RETURNTRANSFER => true,
-              CURLOPT_ENCODING => "",
-              CURLOPT_MAXREDIRS => 10,
-              CURLOPT_TIMEOUT => 30,
-              CURLOPT_SSL_VERIFYHOST => 0,
-              CURLOPT_SSL_VERIFYPEER => 0,
-              CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-              CURLOPT_CUSTOMREQUEST => "POST",
-              CURLOPT_POSTFIELDS => http_build_query($params),
-              CURLOPT_HTTPHEADER => array(
-                "content-type: application/x-www-form-urlencoded"
-              ),
-            ));
+            $curl = curl_init($webhook_url);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_POST, true);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($payload));
+            curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+            curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
 
             $response = curl_exec($curl);
-            $err = curl_error($curl);
-
+            $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
             curl_close($curl);
 
-            \DB::commit();
-
-            return "ok";
-        }catch (\Exception $e){
-            \DB::rollback();
-            return $e->getMessage();
-        }catch(\Error $e){
-            \DB::rollback();
-            return $e->getMessage();
+            if ($http_code !== 200) {
+                \Log::error('Aisoceo webhook HTTP error ('.$http_code.') for order '.$no.': '.$response);
+            } else {
+                $res_json = json_decode($response, true);
+                if (empty($res_json['status']) || $res_json['status'] !== 'success') {
+                    \Log::error('Aisoceo webhook business error for order '.$no.': '.($res_json['message'] ?? $response));
+                }
+            }
+        } catch (\Exception $e) {
+            \Log::error('Aisoceo webhook exception for order '.$no.': '.$e->getMessage());
         }
+
+        return 'ok';
     }
 
     public static function GenerateWithdrawalTransactionNo()

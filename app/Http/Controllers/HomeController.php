@@ -6722,14 +6722,6 @@ class HomeController extends Controller
                 }
             }
 
-            // send to buyer
-            if(!empty($transaction->transaction_no)){
-                $send_order_notification = GlobalController::send_order_notification($transaction->transaction_no);
-                if($send_order_notification !== 'ok'){
-                    throw new \Exception($send_order_notification);
-                }
-            }
-
             \DB::commit();
 
 
@@ -7041,14 +7033,6 @@ class HomeController extends Controller
             
             $delete_cart = Cart::where('user_id', $buyerCode)->whereNotNull('mall')->delete();
 
-            // send to buyer
-            if(!empty($transaction->transaction_no)){
-                $send_order_notification = GlobalController::send_order_notification($transaction->transaction_no);
-                if($send_order_notification !== 'ok'){
-                    throw new \Exception($send_order_notification);
-                }
-            }
-
             \DB::commit();
 
             Toastr::success('Place Order Successfully');
@@ -7177,6 +7161,8 @@ class HomeController extends Controller
 
                     $transaction->status = 1;
                     $transaction->save();
+
+                    GlobalController::send_aisoceo_payment_notification($transaction->transaction_no);
                 }
             }
 
@@ -7247,6 +7233,8 @@ class HomeController extends Controller
 
                     $transaction->status = 1;
                     $transaction->save();
+
+                    GlobalController::send_aisoceo_payment_notification($transaction->transaction_no);
                 }
             }
 
@@ -7358,9 +7346,11 @@ class HomeController extends Controller
 
                     $transaction->status = 1;
                     $transaction->save();
+
+                    GlobalController::send_aisoceo_payment_notification($transaction->transaction_no);
                 }
             }
-        
+
             \DB::commit();
         }catch (\Exception $e){
             \DB::rollback();
@@ -7437,6 +7427,8 @@ class HomeController extends Controller
                     $transaction->status = 1;
                     $transaction->gkash_payment_method = $request->PaymentType;
                     $transaction->save();
+
+                    GlobalController::send_aisoceo_payment_notification($transaction->transaction_no);
                 }
             }
 

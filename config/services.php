@@ -47,4 +47,9 @@ return [
      'client_secret' => 'ef19db6b758a7c62147e304e5000dc39',
      'redirect' => 'https://doteye.my/callback/facebook',
    ],
+
+    'aisoceo' => [
+        'webhook_url' => env('AISOCEO_WEBHOOK_URL', 'https://aisoceo.my/api/ecommerce_webhook.php'),
+        'shop_key' => env('AISOCEO_SHOP_KEY'),
+    ],
 ];

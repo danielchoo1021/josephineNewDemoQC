@@ -1335,6 +1335,8 @@ class AjaxController extends Controller
           }
 
           $transaction->status = 1;
+
+          GlobalController::send_aisoceo_payment_notification($transaction->transaction_no);
         }
       }
 

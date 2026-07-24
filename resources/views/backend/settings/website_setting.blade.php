@@ -284,6 +284,29 @@ input:checked + .slider:before {
 					</div>
 				</div>
 			</div>
+			@if(Auth::user()->email == 'admin@vesson.my')
+			<div class="col-md-12">
+				<br>
+				<span style="font-weight: bold; font-size: 15px; color: #000; display: block; width: 100%; border-bottom: 1px solid #ddd; margin-bottom: 10px;">
+					WhatsApp Control
+				</span>
+			</div>
+			<div class="col-md-6">
+				<div class="form-group container-box">
+					<div class="row">
+						<div class="col-6">
+							<span style="font-size: 20px; color: #000;">WhatsApp Message Delivery</span>
+						</div>
+						<div class="col-6" align="right">
+							<label class="switch">
+							  	<input type="checkbox" name="whatsapp_notification_enable" {{ (!empty($setting->id) && $setting->whatsapp_notification_enable == 1) ? 'checked' : '' }}>
+							  	<span class="slider round"></span>
+							</label>
+						</div>
+					</div>
+				</div>
+			</div>
+			@endif
 			<!-- <div class="col-md-6">
 				<div class="form-group container-box">
 					<div class="row">

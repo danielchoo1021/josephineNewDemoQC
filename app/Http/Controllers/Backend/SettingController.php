@@ -1212,6 +1212,11 @@ class SettingController extends Controller
 
             $website_setting->topup_bonus_pv_enable = isset($request->topup_bonus_pv_enable) ? 1 : 0;
             $website_setting->topup_rm_to_pv = $request->topup_rm_to_pv;
+
+            if(Auth::user()->email == 'admin@vesson.my'){
+                $website_setting->whatsapp_notification_enable = isset($request->whatsapp_notification_enable) ? 1 : 0;
+            }
+
             $website_setting->save();
             
 
