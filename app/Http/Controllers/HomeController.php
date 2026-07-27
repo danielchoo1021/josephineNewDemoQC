@@ -6716,6 +6716,11 @@ class HomeController extends Controller
                     throw new \Exception($heirarchy_commission);
                 }
 
+                $override_hierarchy_commission = GlobalController::override_hierarchy_commission($transaction->user_id, $transaction->transaction_no);
+                if($override_hierarchy_commission != 'ok'){
+                    throw new \Exception($override_hierarchy_commission);
+                }
+
                 $purchase_from_customer_deduct_stock_commission = GlobalController::purchase_from_customer_deduct_stock_commission($transaction->transaction_no);
                 if($purchase_from_customer_deduct_stock_commission != 'ok'){
                     throw new \Exception($purchase_from_customer_deduct_stock_commission);
@@ -7131,7 +7136,7 @@ class HomeController extends Controller
                             // $Generate_Refferal_Reward = $this->Generate_Refferal_Reward($get_merchant->master_id);
                         }
                     }
-        
+
                     $transaction_voucher_assign = GlobalController::transaction_voucher_assign($transaction->id);
                     if($transaction_voucher_assign != 'ok'){
                         throw new \Exception($transaction_voucher_assign);
@@ -7152,6 +7157,11 @@ class HomeController extends Controller
                     $heirarchy_commission = GlobalController::heirarchy_commission($transaction->user_id, $transaction->transaction_no);
                     if($heirarchy_commission != 'ok'){
                         throw new \Exception($heirarchy_commission);
+                    }
+
+                    $override_hierarchy_commission = GlobalController::override_hierarchy_commission($transaction->user_id, $transaction->transaction_no);
+                    if($override_hierarchy_commission != 'ok'){
+                        throw new \Exception($override_hierarchy_commission);
                     }
 
                     $purchase_from_customer_deduct_stock_commission = GlobalController::purchase_from_customer_deduct_stock_commission($transaction->transaction_no);
@@ -7203,7 +7213,7 @@ class HomeController extends Controller
                             // $Generate_Refferal_Reward = $this->Generate_Refferal_Reward($get_merchant->master_id);
                         }
                     }
-        
+
                     $transaction_voucher_assign = GlobalController::transaction_voucher_assign($transaction->id);
                     if($transaction_voucher_assign != 'ok'){
                         throw new \Exception($transaction_voucher_assign);
@@ -7224,6 +7234,11 @@ class HomeController extends Controller
                     $heirarchy_commission = GlobalController::heirarchy_commission($transaction->user_id, $transaction->transaction_no);
                     if($heirarchy_commission != 'ok'){
                         throw new \Exception($heirarchy_commission);
+                    }
+
+                    $override_hierarchy_commission = GlobalController::override_hierarchy_commission($transaction->user_id, $transaction->transaction_no);
+                    if($override_hierarchy_commission != 'ok'){
+                        throw new \Exception($override_hierarchy_commission);
                     }
 
                     $purchase_from_customer_deduct_stock_commission = GlobalController::purchase_from_customer_deduct_stock_commission($transaction->transaction_no);
@@ -7337,6 +7352,11 @@ class HomeController extends Controller
                         if ($heirarchy_commission != 'ok') {
                         throw new \Exception($heirarchy_commission);
                         }
+
+                        $override_hierarchy_commission = GlobalController::override_hierarchy_commission($transaction->user_id, $transaction->transaction_no);
+                        if ($override_hierarchy_commission != 'ok') {
+                        throw new \Exception($override_hierarchy_commission);
+                        }
                     }
 
                     $purchase_from_customer_deduct_stock_commission = GlobalController::purchase_from_customer_deduct_stock_commission($transaction->transaction_no);
@@ -7416,6 +7436,11 @@ class HomeController extends Controller
                         $heirarchy_commission = GlobalController::heirarchy_commission($transaction->user_id, $transaction->transaction_no);
                         if ($heirarchy_commission != 'ok') {
                         throw new \Exception($heirarchy_commission);
+                        }
+
+                        $override_hierarchy_commission = GlobalController::override_hierarchy_commission($transaction->user_id, $transaction->transaction_no);
+                        if ($override_hierarchy_commission != 'ok') {
+                        throw new \Exception($override_hierarchy_commission);
                         }
                     }
 

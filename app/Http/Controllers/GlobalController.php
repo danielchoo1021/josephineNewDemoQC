@@ -34,6 +34,7 @@ use App\SettingTeamDividend;
 use App\SettingRefferalReward;
 use App\SettingMerchantRebate;
 use App\SettingMerchantCommission;
+use App\SettingOverrideHierarchyCommission;
 use App\TopupTransaction;
 use App\AdjustTopupWallet;
 
@@ -2160,6 +2161,11 @@ class GlobalController extends Controller
 
             $website_setting = GlobalController::website_setting();
 
+            if(!empty($website_setting->override_hierarchy_enable)){
+                \DB::commit();
+                return "ok";
+            }
+
             $transaction = Transaction::where('transaction_no', $no);
             $transaction = $transaction->first();
 
@@ -2442,6 +2448,97 @@ class GlobalController extends Controller
                         }
                     }
                 }
+            }
+
+            \DB::commit();
+        }catch (\Exception $e){
+            \DB::rollback();
+            return $e->getMessage().' - '.$e->getLine();
+        }catch(\Error $e){
+            \DB::rollback();
+            return $e->getMessage().' - '.$e->getLine();
+        }
+
+        return "ok";
+    }
+
+    public static function override_hierarchy_commission($code, $no)
+    {
+        try{
+            \DB::beginTransaction();
+
+            $website_setting = GlobalController::website_setting();
+
+            if(empty($website_setting->override_hierarchy_enable)){
+                \DB::commit();
+                return "ok";
+            }
+
+            $transaction = Transaction::where('transaction_no', $no);
+            $transaction = $transaction->first();
+
+            if(empty($transaction->id)){
+                throw new \Exception('Error Transaction');
+            }
+
+            $base_amount = $transaction->grand_total - $transaction->shipping_fee;
+
+            $affs = Affiliate::select('affiliates.*', 'm.lvl')
+                             ->join('agents as m', 'm.code', 'affiliates.user_id')
+                             ->where('affiliates.affiliate_id', $code)
+                             ->where('m.status', '1')
+                             ->orderBy('sort_level', 'asc')
+                             ->get();
+
+            $cumulative_rate = 0;
+
+            foreach($affs as $aff){
+                $setting_override_hierarchy_commission = SettingOverrideHierarchyCommission::where('agent_lvl', $aff->lvl)
+                                                                                             ->where('status', '1')
+                                                                                             ->first();
+
+                if(empty($setting_override_hierarchy_commission->id)){
+                    continue;
+                }
+
+                $rate = !empty($setting_override_hierarchy_commission->comm_amount) ? $setting_override_hierarchy_commission->comm_amount : 0;
+                $increment_rate = $rate - $cumulative_rate;
+
+                if($increment_rate <= 0){
+                    continue;
+                }
+
+                $aff_comm_amount = $base_amount * $increment_rate / 100;
+
+                if($aff_comm_amount > 0){
+                    $insert = new AffiliateCommission();
+                    $insert->type = '1';
+
+                    $authorise_merchant = !empty($_COOKIE['vmerchant']) ? $_COOKIE['vmerchant'] : '';
+                    $get_authorise_status = GlobalController::check_autorize_status($authorise_merchant);
+                    if($get_authorise_status['status'] == 1){
+                    $insert->merchant_id = !empty($get_authorise_status['result']['code']) ? $get_authorise_status['result']['code'] : '';
+                    }
+
+                    $insert->user_id = $aff->user_id;
+                    $insert->user_by = $code;
+                    $insert->transaction_no = $no;
+                    $insert->product_amount = $base_amount;
+                    $insert->comm_pa_type = 'Percentage';
+                    $insert->comm_pa = $increment_rate;
+                    $insert->comm_amount = $aff_comm_amount;
+                    if($transaction->register_product == 1){
+                        $insert->comm_desc = "Overriding Hierarchy Commission (Register Product)";
+                        $insert->comm_desc_cn = "覆盖层级佣金（注册产品)";
+                    }else{
+                        $insert->comm_desc = "Overriding Hierarchy Commission";
+                        $insert->comm_desc_cn = "覆盖层级佣金";
+                    }
+                    $insert->status = 1;
+                    $insert->save();
+                }
+
+                $cumulative_rate = $rate;
             }
 
             \DB::commit();

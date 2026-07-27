@@ -183,7 +183,21 @@ input:checked + .slider:before {
 							</div>
 							<div class="col-6" align="right">
 								<label class="switch">
-								  	<input type="checkbox" name="hierarchy_enable" {{ (!empty($setting->id) && $setting->hierarchy_enable == 1) ? 'checked' : '' }}>
+								  	<input type="checkbox" id="hierarchy_enable" name="hierarchy_enable" {{ (!empty($setting->id) && $setting->hierarchy_enable == 1) ? 'checked' : '' }}>
+								  	<span class="slider round"></span>
+								</label>
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group container-box">
+						<div class="row">
+							<div class="col-6">
+								<li style="font-size: 20px; color: #000;">{{ isset($data['backendlang']['backendlang']['Overriding_Hierarchy_Bonus']) ? $data['backendlang']['backendlang']['Overriding_Hierarchy_Bonus'] :'' }}</li>
+							</div>
+							<div class="col-6" align="right">
+								<label class="switch">
+								  	<input type="checkbox" id="override_hierarchy_enable" name="override_hierarchy_enable" {{ (!empty($setting->id) && $setting->override_hierarchy_enable == 1) ? 'checked' : '' }}>
 								  	<span class="slider round"></span>
 								</label>
 							</div>
@@ -337,8 +351,19 @@ input:checked + .slider:before {
 <script type="text/javascript">
 	$('.submit-form-btn .btn-outline-primary').click( function(e){
     	e.preventDefault();
-    	
+
     	$('#setting-merchant-form').submit();
     });
+
+	$('#hierarchy_enable').on('change', function(){
+		if($(this).is(':checked')){
+			$('#override_hierarchy_enable').prop('checked', false);
+		}
+	});
+	$('#override_hierarchy_enable').on('change', function(){
+		if($(this).is(':checked')){
+			$('#hierarchy_enable').prop('checked', false);
+		}
+	});
 </script>
 @endsection

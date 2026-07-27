@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\SettingMerchantBonus;
 use App\SettingMerchantRebate;
 use App\SettingMerchantCommission;
+use App\SettingOverrideHierarchyCommission;
 use App\SettingPerformanceDividend;
 use App\SettingPerformanceMain;
 use App\SettingTeamDividend;
@@ -323,6 +324,61 @@ class SettingController extends Controller
 
         Toastr::success($translation_data['backendlang']['backendlang']['Setting Heirarchy Bonus Successful'] ?? 'Setting Heirarchy Bonus Successful');
         return redirect()->route('setting_merchant_commission');
+    }
+
+    public function setting_override_hierarchy_bonus()
+    {
+        $setting_override_hierarchy_commissions = SettingOverrideHierarchyCommission::get();
+
+        $levels = AgentLevel::where('status', '1');
+        if(Auth::guard('merchant')->check()){
+        $levels = $levels->where('merchant_id', Auth::user()->code);
+        }else{
+        $levels = $levels->whereNull('merchant_id');
+        }
+        $levels = $levels->get();
+
+        $value = [];
+        foreach($setting_override_hierarchy_commissions as $sohc){
+            $value[$sohc->agent_lvl] = array($sohc->comm_amount, $sohc->id);
+        }
+
+        return view('backend.settings.setting_override_hierarchy_bonus', compact('levels',
+                                                                            'value'));
+    }
+
+    public function save_setting_override_hierarchy_bonus(Request $request)
+    {
+        $translation_data = GlobalController::get_translations();
+        try{
+            \DB::beginTransaction();
+
+            for($a=0; $a<count($request->comm_amount); $a++){
+
+                if(!empty($request->ids[$a])){
+                    $override_bonus = SettingOverrideHierarchyCommission::find($request->ids[$a]);
+                }else{
+                    $override_bonus = new SettingOverrideHierarchyCommission();
+                }
+
+                $override_bonus->agent_lvl = $request->agent_lvl[$a];
+                $override_bonus->comm_amount = $request->comm_amount[$a];
+                $override_bonus->save();
+            }
+
+            \DB::commit();
+        }catch (\Exception $e){
+            \DB::rollback();
+            Toastr::error($e->getMessage());
+            return Redirect::back()->withInput($request->all())->withErrors($e->getMessage());
+        }catch(\Error $e){
+            \DB::rollback();
+            Toastr::error($e->getMessage());
+            return Redirect::back()->withInput($request->all())->withErrors($e->getMessage());
+        }
+
+        Toastr::success($translation_data['backendlang']['backendlang']['Setting Overriding Hierarchy Bonus Successful'] ?? 'Setting Overriding Hierarchy Bonus Successful');
+        return redirect()->route('setting_override_hierarchy_bonus');
     }
 
     public function setting_commission()
@@ -1204,6 +1260,10 @@ class SettingController extends Controller
             
             $website_setting->agent_rebate_enable = isset($request->agent_rebate_enable) ? 1 : 0;
             $website_setting->hierarchy_enable = isset($request->hierarchy_enable) ? 1 : 0;
+            $website_setting->override_hierarchy_enable = isset($request->override_hierarchy_enable) ? 1 : 0;
+            if($website_setting->override_hierarchy_enable == 1){
+                $website_setting->hierarchy_enable = 0;
+            }
             $website_setting->referral_enable = isset($request->referral_enable) ? 1 : 0;
 
             $website_setting->member_rebate_enable = isset($request->member_rebate_enable) ? 1 : 0;

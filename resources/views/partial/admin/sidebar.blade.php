@@ -646,10 +646,18 @@
                             </li>
                             @endif
 
-                            @if(!empty($data['permission']['permission'][Auth::guard($data['userGuardRole'])->user()->permission_lvl]['hierarchy-bonus-list']))
+                            @if(!empty($data['permission']['permission'][Auth::guard($data['userGuardRole'])->user()->permission_lvl]['hierarchy-bonus-list']) && !empty($data['web_setting']->hierarchy_enable))
                             <li class="submenu-item {{ (Request::segment(1) == 'setting_merchant_commission') ? 'active' : '' }}">
                                 <a href="{{ route('setting_merchant_commission') }}" class="submenu-link">
                                     {{ isset($data['backendlang']['backendlang']['Hierarchy_Bonus']) ? $data['backendlang']['backendlang']['Hierarchy_Bonus'] : ''  }}
+                                </a>
+                            </li>
+                            @endif
+
+                            @if(!empty($data['permission']['permission'][Auth::guard($data['userGuardRole'])->user()->permission_lvl]['override-hierarchy-bonus-list']) && !empty($data['web_setting']->override_hierarchy_enable))
+                            <li class="submenu-item {{ (Request::segment(1) == 'setting_override_hierarchy_bonus') ? 'active' : '' }}">
+                                <a href="{{ route('setting_override_hierarchy_bonus') }}" class="submenu-link">
+                                    {{ isset($data['backendlang']['backendlang']['Overriding_Hierarchy_Bonus']) ? $data['backendlang']['backendlang']['Overriding_Hierarchy_Bonus'] : ''  }}
                                 </a>
                             </li>
                             @endif

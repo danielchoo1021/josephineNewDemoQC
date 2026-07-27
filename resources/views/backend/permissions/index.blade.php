@@ -515,6 +515,17 @@
 							        	</ul>
 					        		</li>
 					        		<li>
+					        			<a href="javascript:void(0);" class="permission-control parent" data-id="{{ $select->id }}" data-page="">{{ isset($data['backendlang']['backendlang']['Overriding_Hierarchy_Bonus']) ? $data['backendlang']['backendlang']['Overriding_Hierarchy_Bonus'] :'' }}</a>
+							        	<ul>
+							        		<li>
+							        			<a href="javascript:void(0);" class="permission-control {{ (isset($get_permission[$select->id]['override-hierarchy-bonus-insert'])) ? 'active' : '' }}" data-id="{{ $select->id }}" data-page="override-hierarchy-bonus-insert">{{ isset($data['backendlang']['backendlang']['Insert']) ? $data['backendlang']['backendlang']['Insert'] :'' }}</a>
+							        			<a href="javascript:void(0);" class="permission-control {{ (isset($get_permission[$select->id]['override-hierarchy-bonus-list'])) ? 'active' : '' }}" data-id="{{ $select->id }}" data-page="override-hierarchy-bonus-list">{{ isset($data['backendlang']['backendlang']['View']) ? $data['backendlang']['backendlang']['View'] :'' }}</a>
+							        			<a href="javascript:void(0);" class="permission-control {{ (isset($get_permission[$select->id]['override-hierarchy-bonus-edit'])) ? 'active' : '' }}" data-id="{{ $select->id }}" data-page="override-hierarchy-bonus-edit">{{ isset($data['backendlang']['backendlang']['Edit']) ? $data['backendlang']['backendlang']['Edit'] :'' }}</a>
+							        			<a href="javascript:void(0);" class="permission-control {{ (isset($get_permission[$select->id]['override-hierarchy-bonus-delete'])) ? 'active' : '' }}" data-id="{{ $select->id }}" data-page="override-hierarchy-bonus-delete">{{ isset($data['backendlang']['backendlang']['Delete']) ? $data['backendlang']['backendlang']['Delete'] :'' }}</a>
+							        		</li>
+							        	</ul>
+					        		</li>
+					        		<li>
 					        			<a href="javascript:void(0);" class="permission-control parent" data-id="{{ $select->id }}" data-page="">{{ isset($data['backendlang']['backendlang']['Referral_Reward']) ? $data['backendlang']['backendlang']['Referral_Reward'] :'' }}</a>
 							        	<ul>
 							        		<li>

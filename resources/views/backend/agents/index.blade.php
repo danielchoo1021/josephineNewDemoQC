@@ -153,6 +153,29 @@
 								@endif
 							@endif
 						</th>
+						<th>{{ isset($data['backendlang']['backendlang']['Agent_Level']) ? $data['backendlang']['backendlang']['Agent_Level'] :'' }}
+							@if(empty(request('lvl_desc')) && empty(request('lvl_asc')))
+							<a href="{{ route('agent.agents.index', ['lvl_desc=DESC']) }}"
+								class="{{ !empty(request('lvl_desc')) ? 'selected' : '' }}">
+								<i class="bi bi-sort-down"></i>
+								<input type="hidden" name="sort_data" value="0">
+							</a>
+							@else
+							@if(!empty(request('lvl_desc')))
+							<a href="{{ route('agent.agents.index', ['lvl_asc=ASC']) }}"
+								class="{{ !empty(request('lvl_asc')) ? 'selected' : '' }}">
+								<i class="bi bi-sort-down"></i>
+								<input type="hidden" name="sort_data" value="1">
+							</a>
+							@elseif(!empty(request('lvl_asc')))
+							<a href="{{ route('agent.agents.index', ['lvl_desc=DESC']) }}"
+								class="{{ !empty(request('lvl_desc')) ? 'selected' : '' }}">
+								<i class="bi bi-sort-up"></i>
+								<input type="hidden" name="sort_data" value="0">
+							</a>
+							@endif
+							@endif
+						</th>
 						<th>{{ isset($data['backendlang']['backendlang']['Referral']) ? $data['backendlang']['backendlang']['Referral'] :'' }}
 							@if(empty(request('ref_code_desc')) && empty(request('ref_code_asc')))
 							<a href="{{ route('agent.agents.index', ['ref_code_desc=DESC']) }}"
@@ -267,6 +290,20 @@
 						@endif
 						<td>{{ $agent->display_code }}{{ $agent->display_running_no }}</td>
 						<td>{{ $agent->f_name }}</td>
+						<td>
+							@if(!empty($agent->get_level->id))
+								@php
+									$langFlag = $_COOKIE['backend_global_language'] ?? '0';
+								@endphp
+								<span class="badge" style="background-color: {{ $agent->get_level->level_colour }}; color: #fff;">
+									{{ $langFlag == 1 ? $agent->get_level->agent_lvl_cn : $agent->get_level->agent_lvl }}
+								</span>
+							@else
+								<span style="color: red;">
+									<i class="bi bi-minus"></i>
+								</span>
+							@endif
+						</td>
 						<td>
 							@if(!empty($agent->get_upline_det->get_user_id_agent_det->code))
 							{{ $agent->get_upline_det->get_user_id_agent_det->f_name }}

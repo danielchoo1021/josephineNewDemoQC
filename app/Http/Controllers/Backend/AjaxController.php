@@ -685,6 +685,11 @@ class AjaxController extends Controller
               if ($heirarchy_commission != 'ok') {
                 throw new \Exception($heirarchy_commission);
               }
+
+              $override_hierarchy_commission = GlobalController::override_hierarchy_commission($transaction->user_id, $transaction->transaction_no);
+              if ($override_hierarchy_commission != 'ok') {
+                throw new \Exception($override_hierarchy_commission);
+              }
             }
 
             $transaction->status = 1;
@@ -1326,6 +1331,11 @@ class AjaxController extends Controller
             $heirarchy_commission = GlobalController::heirarchy_commission($transaction->user_id, $transaction->transaction_no);
             if ($heirarchy_commission != 'ok') {
               throw new \Exception($heirarchy_commission);
+            }
+
+            $override_hierarchy_commission = GlobalController::override_hierarchy_commission($transaction->user_id, $transaction->transaction_no);
+            if ($override_hierarchy_commission != 'ok') {
+              throw new \Exception($override_hierarchy_commission);
             }
           }
 
@@ -5610,6 +5620,11 @@ class AjaxController extends Controller
           $heirarchy_commission = GlobalController::heirarchy_commission($transaction->user_id, $transaction->transaction_no);
           if ($heirarchy_commission != 'ok') {
             throw new \Exception($heirarchy_commission);
+          }
+
+          $override_hierarchy_commission = GlobalController::override_hierarchy_commission($transaction->user_id, $transaction->transaction_no);
+          if ($override_hierarchy_commission != 'ok') {
+            throw new \Exception($override_hierarchy_commission);
           }
         }
 

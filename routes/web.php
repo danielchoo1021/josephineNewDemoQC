@@ -467,6 +467,9 @@ Route::group(['middleware' => 'auth:admin,merchant,staff'], function () {
 	Route::get('setting_merchant_commission', 'Backend\SettingController@setting_merchant_commission')->name('setting_merchant_commission');
 	Route::post('save_setting_merchant_commission', 'Backend\SettingController@save_setting_merchant_commission')->name('save_setting_merchant_commission');
 
+	Route::get('setting_override_hierarchy_bonus', 'Backend\SettingController@setting_override_hierarchy_bonus')->name('setting_override_hierarchy_bonus');
+	Route::post('save_setting_override_hierarchy_bonus', 'Backend\SettingController@save_setting_override_hierarchy_bonus')->name('save_setting_override_hierarchy_bonus');
+
 	Route::get('setting_commission', 'Backend\SettingController@setting_commission')->name('setting_commission');
 	Route::post('save_setting_commission', 'Backend\SettingController@save_setting_commission')->name('save_setting_commission');
 

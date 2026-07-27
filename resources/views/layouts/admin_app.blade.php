@@ -1636,6 +1636,22 @@ body{
                         </nav>
                     </div>
                 </div>
+            @elseif(Request::segment(1) == 'setting_override_hierarchy_bonus')
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">{{ isset($data['backendlang']['backendlang']['Overriding_Hierarchy_Bonus']) ? $data['backendlang']['backendlang']['Overriding_Hierarchy_Bonus'] :'' }}</h4>
+                    </div>
+                    <div class="card-body">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="#"> {{ isset($data['backendlang']['backendlang']['Home']) ? $data['backendlang']['backendlang']['Home'] :'' }}</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">
+                                    {{ isset($data['backendlang']['backendlang']['Overriding_Hierarchy_Bonus']) ? $data['backendlang']['backendlang']['Overriding_Hierarchy_Bonus'] :'' }}
+                                </li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
             @elseif(Request::segment(1) == 'setting_recommend_bonus')
                 <div class="card">
                     <div class="card-header">

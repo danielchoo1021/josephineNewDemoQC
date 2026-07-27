@@ -30,13 +30,57 @@ class LoginController extends Controller
     protected $redirectTo = '/';
 
     /**
+     * The guard that actually authenticated the current request.
+     * Storefront accounts can be either a Member (web guard / users table)
+     * or an Agent (agent guard / agents table) - attemptLogin() below tries
+     * both and records here which one succeeded.
+     *
+     * @var string
+     */
+    protected $authGuardUsed = 'web';
+
+    /**
      * Create a new controller instance.
      *
      * @return void
      */
     public function __construct()
     {
-        
+
+    }
+
+    /**
+     * Get the guard to be used during authentication.
+     *
+     * @return \Illuminate\Contracts\Auth\StatefulGuard
+     */
+    protected function guard()
+    {
+        return Auth::guard($this->authGuardUsed);
+    }
+
+    /**
+     * Attempt to log the user in as a Member first, then as an Agent.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return bool
+     */
+    protected function attemptLogin(Request $request)
+    {
+        $credentials = $this->credentials($request);
+        $remember = $request->filled('remember');
+
+        if (Auth::guard('web')->attempt($credentials, $remember)) {
+            $this->authGuardUsed = 'web';
+            return true;
+        }
+
+        if (Auth::guard('agent')->attempt($credentials, $remember)) {
+            $this->authGuardUsed = 'agent';
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -66,7 +110,7 @@ class LoginController extends Controller
             return;
         }
 
-        Auth::logout();
+        $this->guard()->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
