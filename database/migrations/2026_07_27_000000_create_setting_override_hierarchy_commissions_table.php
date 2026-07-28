@@ -13,6 +13,10 @@ class CreateSettingOverrideHierarchyCommissionsTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('setting_override_hierarchy_commissions')) {
+            return;
+        }
+
         Schema::create('setting_override_hierarchy_commissions', function (Blueprint $table) {
             $table->increments('id');
             $table->string('agent_lvl')->nullable();

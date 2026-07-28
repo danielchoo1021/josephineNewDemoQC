@@ -13,6 +13,10 @@ class AddOverrideHierarchyEnableToWebsiteSettingsTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasColumn('website_settings', 'override_hierarchy_enable')) {
+            return;
+        }
+
         Schema::table('website_settings', function (Blueprint $table) {
             $table->boolean('override_hierarchy_enable')->default(0);
         });

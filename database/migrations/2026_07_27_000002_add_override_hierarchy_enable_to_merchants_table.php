@@ -13,6 +13,10 @@ class AddOverrideHierarchyEnableToMerchantsTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasColumn('merchants', 'override_hierarchy_enable')) {
+            return;
+        }
+
         Schema::table('merchants', function (Blueprint $table) {
             $table->boolean('override_hierarchy_enable')->default(0);
         });

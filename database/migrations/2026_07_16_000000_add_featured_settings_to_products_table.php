@@ -14,11 +14,21 @@ class AddFeaturedSettingsToProductsTable extends Migration
     public function up()
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->string('featured_display_name')->nullable()->after('featured');
-            $table->string('featured_point_1')->nullable()->after('featured_display_name');
-            $table->string('featured_point_2')->nullable()->after('featured_point_1');
-            $table->string('featured_point_3')->nullable()->after('featured_point_2');
-            $table->string('featured_image')->nullable()->after('featured_point_3');
+            if (!Schema::hasColumn('products', 'featured_display_name')) {
+                $table->string('featured_display_name')->nullable()->after('featured');
+            }
+            if (!Schema::hasColumn('products', 'featured_point_1')) {
+                $table->string('featured_point_1')->nullable()->after('featured_display_name');
+            }
+            if (!Schema::hasColumn('products', 'featured_point_2')) {
+                $table->string('featured_point_2')->nullable()->after('featured_point_1');
+            }
+            if (!Schema::hasColumn('products', 'featured_point_3')) {
+                $table->string('featured_point_3')->nullable()->after('featured_point_2');
+            }
+            if (!Schema::hasColumn('products', 'featured_image')) {
+                $table->string('featured_image')->nullable()->after('featured_point_3');
+            }
         });
     }
 

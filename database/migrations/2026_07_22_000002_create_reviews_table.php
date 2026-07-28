@@ -13,6 +13,10 @@ class CreateReviewsTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('reviews')) {
+            return;
+        }
+
         Schema::create('reviews', function (Blueprint $table) {
             $table->increments('id');
             $table->string('image')->nullable();

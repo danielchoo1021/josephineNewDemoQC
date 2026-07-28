@@ -13,6 +13,10 @@ class AddWhatsappNotificationEnableToWebsiteSettingsTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasColumn('website_settings', 'whatsapp_notification_enable')) {
+            return;
+        }
+
         Schema::table('website_settings', function (Blueprint $table) {
             $table->boolean('whatsapp_notification_enable')->default(1);
         });

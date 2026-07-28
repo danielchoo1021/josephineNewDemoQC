@@ -13,6 +13,10 @@ class CreateSettingTrustPhotosTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('setting_trust_photos')) {
+            return;
+        }
+
         Schema::create('setting_trust_photos', function (Blueprint $table) {
             $table->increments('id');
             $table->string('image')->nullable();

@@ -14,8 +14,12 @@ class AddTitleTextToSettingHomeVideosTable extends Migration
     public function up()
     {
         Schema::table('setting_home_videos', function (Blueprint $table) {
-            $table->string('title')->nullable()->after('image');
-            $table->string('text')->nullable()->after('title');
+            if (!Schema::hasColumn('setting_home_videos', 'title')) {
+                $table->string('title')->nullable()->after('image');
+            }
+            if (!Schema::hasColumn('setting_home_videos', 'text')) {
+                $table->string('text')->nullable()->after('title');
+            }
         });
     }
 
