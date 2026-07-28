@@ -5,10 +5,15 @@ namespace App\Http\Controllers\Auth;
 use App\Admin;
 use App\User;
 use App\Merchant;
+use App\Agent;
 use App\Corporate;
 use App\Affiliate;
 use App\AgentLevel;
 use App\State;
+use App\Product;
+use App\Transaction;
+use App\TransactionDetail;
+use App\SettingShippingFee;
 
 use App\Http\Controllers\GlobalController;
 
@@ -94,16 +99,24 @@ class RegisterController extends Controller
     {
         $this->validator($request->all())->validate();
 
+        // An already-logged-in agent/merchant/admin can use this same form to
+        // register a downline on their behalf. In that case they are not the
+        // one who needs to log in, so skip the "Proceed to Login" prompt.
+        $assistedRegistration = Auth::guard('agent')->check()
+            || Auth::guard('merchant')->check()
+            || Auth::guard('admin')->check();
+
         $user = $this->create($request->all());
 
         event(new Registered($user));
 
-        $login_route = ($request->role == '1') ? route('login') : route('merchant_login');
+        $pendingApproval = $assistedRegistration && (string) $user->status === '99';
 
         Session::flash('registration_success', [
             'login_id' => $user->email,
             'code' => $user->display_code . $user->display_running_no,
-            'login_route' => $login_route,
+            'login_route' => $assistedRegistration ? null : route('login'),
+            'pending_approval' => $pendingApproval,
         ]);
 
         return redirect($this->redirectPath());
@@ -119,9 +132,9 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'country_code' => ['required'],
-            'phone' => ['required', 'unique:users', 'unique:merchants'],
+            'phone' => ['required', 'unique:users', 'unique:merchants', 'unique:agents'],
             'f_name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users', 'unique:merchants', 'unique:admins', 'unique:staff'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users', 'unique:merchants', 'unique:agents', 'unique:admins', 'unique:staff'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
     }
@@ -187,14 +200,19 @@ class RegisterController extends Controller
 
         $merchant = Merchant::where(DB::raw('CONCAT(display_code, display_running_no)'), 'like', '%'.$data['master_id'].'%')->where('status', '1')->first();
         $admin = Admin::where(DB::raw('CONCAT(display_code, display_running_no)'), 'like', '%'.$data['master_id'].'%')->where('status', '1')->first();
+        $agent = Agent::where(DB::raw('CONCAT(display_code, display_running_no)'), 'like', '%'.$data['master_id'].'%')->where('status', '1')->first();
         $user = User::where(DB::raw('CONCAT(display_code, display_running_no)'), 'like', '%'.$data['master_id'].'%')->where('status', '1')->where('lvl', '1')->first();
-        
+
         if(!empty($merchant->id)){
             $uplineDetail = $merchant;
         }
 
         if(!empty($admin->id)){
             $uplineDetail = $admin;
+        }
+
+        if(!empty($agent->id)){
+            $uplineDetail = $agent;
         }
 
         if(!empty($user->id)){
@@ -225,12 +243,11 @@ class RegisterController extends Controller
                 'status'=> '1'
             ]);
         }else{
-            $get_lvl_code = AgentLevel::find(1);
-            $dc = GlobalController::MerchantDisplayCode();
+            $dc = GlobalController::AgentDisplayCode();
 
-            return Merchant::create([
+            $newAgent = Agent::create([
                 'master_id' => $uplineDetail->code,
-                'code' => $this->MerchantCode(),
+                'code' => GlobalController::AgentCode(),
                 'country_code' => $data['country_code'],
                 'phone' => preg_replace("/^\+?{$data['country_code']}/", '',$filterPhone3),
                 'f_name' => ucwords(strtolower($data['f_name'])),
@@ -243,10 +260,134 @@ class RegisterController extends Controller
                 'display_running_no'=> $dc[1],
                 'password' => Hash::make($data['password']),
                 'verify_status' => '1',
-                'lvl' => '1',
+                'lvl' => !empty($data['lvl']) ? $data['lvl'] : '1',
                 'status' => '99',
             ]);
+
+            $this->createRegistrationTransaction($newAgent, $data);
+
+            return $newAgent;
         }
+    }
+
+    /**
+     * When registering with the "Purchase Products" starter package flow
+     * (merchant_register.blade.php's product picker + bank transfer UI),
+     * create the matching pending Transaction and link it back onto the
+     * agent via `register_transaction`, so it shows up in the admin
+     * Transaction list and the Pending Agent "Joining Product" column,
+     * and so the existing ApproveRejectMerchant approval flow can pick
+     * it up exactly like a normal bank-slip order.
+     *
+     * @param  \App\Agent  $newAgent
+     * @param  array  $data
+     * @return void
+     */
+    protected function createRegistrationTransaction($newAgent, array $data)
+    {
+        // Customer-level agents skip the starter-package purchase entirely,
+        // regardless of what the submitted form fields say.
+        if(($data['lvl'] ?? null) == '1'){
+            return;
+        }
+
+        if(($data['joining_type'] ?? null) != '2' || empty($data['selected_starter'])){
+            return;
+        }
+
+        $product = Product::where(DB::raw('md5(products.id)'), $data['selected_starter'])->where('status', '1')->first();
+
+        if(empty($product->id)){
+            return;
+        }
+
+        $quantity = !empty($data['quantity']) ? (int) $data['quantity'] : 1;
+        $unitPrice = !empty($product->special_price) ? $product->special_price : $product->price;
+        $totalWeight = $product->weight * $quantity;
+        $subTotal = $unitPrice * $quantity;
+        $shippingFee = $this->calculateRegistrationShippingFee($data['country'] ?? null, $data['state'] ?? null, $totalWeight);
+
+        $transaction = new Transaction();
+        $transaction->transaction_no = GlobalController::GenerateTransactionNo();
+        $transaction->user_id = $newAgent->code;
+        $transaction->weight = $totalWeight;
+        $transaction->sub_total = $subTotal;
+        $transaction->shipping_fee = $shippingFee;
+        $transaction->grand_total = $subTotal + $shippingFee;
+        $transaction->address_name = $newAgent->f_name;
+        $transaction->address = $data['address'] ?? null;
+        $transaction->postcode = $data['postcode'] ?? null;
+        $transaction->city = $data['city'] ?? null;
+        $transaction->state = $data['state'] ?? null;
+        $transaction->country = $data['country'] ?? null;
+        $transaction->country_code = $newAgent->country_code;
+        $transaction->phone = $newAgent->phone;
+        $transaction->email = $newAgent->email;
+        $transaction->register_product = 1;
+        $transaction->bank_id = $data['bank_id'] ?? null;
+        $transaction->cdm_bank_id = $data['cdm_bank_id'] ?? null;
+
+        if(!empty($data['bank_slip']) && $data['bank_slip'] instanceof \Illuminate\Http\UploadedFile){
+            $files = $data['bank_slip'];
+            $name = $files->getClientOriginalName();
+            $exp = explode(".", $name);
+            $file_ext = end($exp);
+            $name = md5($name.date('Y-m-d H:i:s')).'.'.$file_ext;
+            $files->move(GlobalController::get_image_path("uploads/bank_slip/".$newAgent->code."/"), $name);
+            $transaction->bank_slip = "uploads/bank_slip/".$newAgent->code."/".$name;
+        }
+
+        $transaction->status = 98;
+        $transaction->save();
+
+        $transactionDetail = new TransactionDetail();
+        $transactionDetail->transaction_id = $transaction->id;
+        $transactionDetail->product_id = $product->id;
+        $transactionDetail->item_code = $product->item_code;
+        $transactionDetail->product_code = $product->product_code;
+        $transactionDetail->unit_weight = $product->weight;
+        $transactionDetail->product_name = $product->product_name;
+        $transactionDetail->unit_price = $unitPrice;
+        $transactionDetail->costing_price = $product->costing_price;
+        $transactionDetail->quantity = $quantity;
+        $transactionDetail->get_point = $product->get_point;
+        $transactionDetail->save();
+
+        $newAgent->register_transaction = $transaction->transaction_no;
+        $newAgent->save();
+    }
+
+    /**
+     * Same lookup used by AjaxController@GetRegisterPayment for the live
+     * price preview, kept server-side here so the stored shipping fee
+     * can't be tampered with via the submitted form fields.
+     *
+     * @param  string|null  $country
+     * @param  string|null  $state
+     * @param  float  $totalWeight
+     * @return float
+     */
+    protected function calculateRegistrationShippingFee($country, $state, $totalWeight)
+    {
+        if(empty($country)){
+            return 0;
+        }
+
+        if($country == '160'){
+            $area = (!in_array($state, ['11', '12', '15'])) ? 'west' : 'east';
+
+            $shipping_fees = SettingShippingFee::where('area', $area)
+                                                ->where('weight', '<=', ceil($totalWeight))
+                                                ->orderBy('weight', 'desc')
+                                                ->first();
+        }else{
+            $shipping_fees = SettingShippingFee::where('country_id', $country)
+                                                ->where('weight', '<=', ceil($totalWeight))
+                                                ->orderBy('weight', 'desc')
+                                                ->first();
+        }
+
+        return !empty($shipping_fees->shipping_fee) ? $shipping_fees->shipping_fee : 0;
     }
 
     protected function MerchantDisplayCode($agent_lvl_code)

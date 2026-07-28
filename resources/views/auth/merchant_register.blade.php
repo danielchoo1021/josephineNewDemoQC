@@ -46,7 +46,7 @@
         <div class="container-box">
             <form method="POST" action="{{ route('register') }}" id="register-form" enctype="multipart/form-data">
                 @csrf
-                <h3 align="center" class="header-login">Register Agent Account</h3>
+                <h3 align="center" class="header-login">{{ isset($data['lang']['lang']['register_account']) ? $data['lang']['lang']['register_account'] :'Register Account' }}</h3>
                 <br>
                 <div class="register-page merchant">
                     <div class="form-group">
@@ -54,6 +54,7 @@
                           <div class="alert alert-danger">{!! implode('<br/>', $errors->all(':message')) !!}</div>
                         @endif
                         <input type="hidden" name="role" value="2">
+                        <input type="hidden" name="lvl" value="{{ $registerLevel ?? '2' }}">
                     </div>
 
                     <div class="form-group" style="display: none;">
@@ -165,7 +166,7 @@
                         <input type="text" class="form-control ic ic-field required-feild"  placeholder="{{ isset($data['lang']['lang']['nric_no']) ? $data['lang']['lang']['nric_no'] :'身份证号码 (NRIC No)'}} (Malaysia)" name="ic" value="{{ old('ic') }}" onkeypress="return isNumberKey(event)" maxlength="12">
                     </div>
                     <div class="address_area">
-                        @if(!$products->isEmpty() && $data['web_setting']->registration_product_enable == 1)
+                        @if($requireRegisterProduct)
                         <div class="form-group">
                             <label>{{ isset($data['lang']['lang']['country']) ? $data['lang']['lang']['country'] :'国家'}}<span class="important-text">*</span></label>
                             <select class="form-control select2 country" name="country" id="country" data-live-search="true">
@@ -287,10 +288,6 @@
                     <div class="form-group" align="center">
                         {{ isset($data['lang']['lang']['already_have_account']) ? $data['lang']['lang']['already_have_account'] :'已有帐号'}}? <a href="{{ route('login') }}">{{ isset($data['lang']['lang']['login']) ? $data['lang']['lang']['login'] :'登录'}}</a>
                     </div>
-
-                    <div class="form-group" align="center">
-                        Member Account? <a href="{{ route('register') }}">Register as Member</a>
-                    </div>
                 </div>
 
                 <div class="modal fade" id="exampleSecondModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="z-index: 9999;">
@@ -309,20 +306,14 @@
                         <button type="button" class="btn btn-shadow" data-dismiss="modal">
                             {{ isset($data['lang']['lang']['close']) ? $data['lang']['lang']['close'] :'关闭'}}
                         </button>
-                        @if($products->isEmpty())
+                        @if(!$requireRegisterProduct)
                             <button class="btn btn-shadow">
                                 {{ isset($data['lang']['lang']['confirm']) ? $data['lang']['lang']['confirm'] :'确认'}}
                             </button>
                         @else
-                            @if($data['web_setting']->registration_product_enable == 0)
-                                <button class="btn btn-shadow">
-                                    {{ isset($data['lang']['lang']['confirm']) ? $data['lang']['lang']['confirm'] :'确认'}}
-                                </button>
-                            @else
-                                <button type="button" class="btn btn-shadow open-products">
-                                    {{ isset($data['lang']['lang']['confirm']) ? $data['lang']['lang']['confirm'] :'确认'}}
-                                </button>
-                            @endif
+                            <button type="button" class="btn btn-shadow open-products">
+                                {{ isset($data['lang']['lang']['confirm']) ? $data['lang']['lang']['confirm'] :'确认'}}
+                            </button>
                         @endif
                       </div>
                     </div>
@@ -651,6 +642,7 @@
         
         var products = '{{ $products }}';
         var registration_enable = '{{ $data["web_setting"]->registration_product_enable }}';
+        var requireRegisterProduct = {{ $requireRegisterProduct ? 'true' : 'false' }};
 
         prefer_language = (prefer_language == 1) ? '中文' : 'English';
         // gender = (gender == 'Male') ? 'Male' : 'Female';
@@ -748,7 +740,7 @@
         }
 
         // alert(products);
-        if(products != '[]' && registration_enable == 1){
+        if(requireRegisterProduct){
             if(type == 2){
                 if(!address){
                     $('#error-message').addClass('important-text');

@@ -391,16 +391,24 @@ class HomeController extends Controller
 
         $get_joining_fees = SettingJoiningFee::get();
 
-        return view('auth.merchant_register', ['merchants'=>$merchants, 
-                                               'countries'=>$countries, 
+        // lvl=1 (Customer) registrations skip the Register Product / joining
+        // package purchase step entirely and go straight to a plain success.
+        $registerLevel = request('lvl', '2');
+        $website_setting = WebsiteSetting::find(1);
+        $requireRegisterProduct = $registerLevel != '1' && !$products->isEmpty() && !empty($website_setting->registration_product_enable);
+
+        return view('auth.merchant_register', ['merchants'=>$merchants,
+                                               'countries'=>$countries,
                                                'refferer_name'=>$refferer_name,
                                                'products'=>$products,
                                                'states'=>$states,
                                                'levels'=>$levels,
                                                'get_joining_fees'=>$get_joining_fees,
-                                               'refferer_code'=>$refferer_code], 
-                                               compact('listingImages', 
-                                                       'priceV', 
+                                               'refferer_code'=>$refferer_code,
+                                               'registerLevel'=>$registerLevel,
+                                               'requireRegisterProduct'=>$requireRegisterProduct],
+                                               compact('listingImages',
+                                                       'priceV',
                                                        'variation_options'));
     }
 

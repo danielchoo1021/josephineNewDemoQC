@@ -3969,11 +3969,19 @@ li:hover .dropdown-menu {
                 <div class="modal-header" style="border-bottom: none; align-items: center; flex-direction: column; padding-bottom: 0;">
                     <i class="fa fa-check-circle" aria-hidden="true" style="font-size: 56px; color: #28a745; margin-bottom: 12px;"></i>
                     <h4 id="registrationSuccessLabel">
-                        {{ isset($data['lang']['lang']['registration_successful']) ? $data['lang']['lang']['registration_successful'] :'Registration Successful'}}
+                        @if(session('registration_success')['pending_approval'] ?? false)
+                            {{ isset($data['lang']['lang']['registration_submitted']) ? $data['lang']['lang']['registration_submitted'] :'Account Creation Submitted'}}
+                        @else
+                            {{ isset($data['lang']['lang']['registration_successful']) ? $data['lang']['lang']['registration_successful'] :'Registration Successful'}}
+                        @endif
                     </h4>
                 </div>
                 <div class="modal-body">
-                    <p>{{ isset($data['lang']['lang']['registration_success_message']) ? $data['lang']['lang']['registration_success_message'] :'Your account has been created successfully. Please keep the login details below.'}}</p>
+                    @if(session('registration_success')['pending_approval'] ?? false)
+                        <p>{{ isset($data['lang']['lang']['registration_pending_approval_message']) ? $data['lang']['lang']['registration_pending_approval_message'] :'The account below has been created and is pending admin approval before it can log in.'}}</p>
+                    @else
+                        <p>{{ isset($data['lang']['lang']['registration_success_message']) ? $data['lang']['lang']['registration_success_message'] :'Your account has been created successfully. Please keep the login details below.'}}</p>
+                    @endif
                     <table class="table table-borderless" style="margin-bottom: 0;">
                         <tr>
                             <td><strong>{{ isset($data['lang']['lang']['login_id']) ? $data['lang']['lang']['login_id'] :'Login ID (Email)'}}</strong></td>
@@ -3989,9 +3997,11 @@ li:hover .dropdown-menu {
                     <a href="{{ route('home') }}" class="btn btn-shadow">
                         {{ isset($data['lang']['lang']['back_to_home']) ? $data['lang']['lang']['back_to_home'] :'Back to Home'}}
                     </a>
+                    @if(!empty(session('registration_success')['login_route']))
                     <a href="{{ session('registration_success')['login_route'] }}" class="btn btn-primary">
                         {{ isset($data['lang']['lang']['proceed_to_login']) ? $data['lang']['lang']['proceed_to_login'] :'Proceed to Login'}}
                     </a>
+                    @endif
                 </div>
             </div>
         </div>

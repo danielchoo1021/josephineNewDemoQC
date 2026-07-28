@@ -61,7 +61,7 @@
 									{{ isset($data['lang']['lang']['url']) ? $data['lang']['lang']['url'] :'网址'}}:
 									<div class="button-inside">
 										<p class="mb-2">
-											<input type="text" name="guest_link" id="guest_link" class="form-control" value="{{ route('register', ['p='.Auth::user()->display_code.Auth::user()->display_running_no]) }}" style="text-align: center;">
+											<input type="text" name="guest_link" id="guest_link" class="form-control" value="{{ route('merchant_register', 'p='.Auth::user()->display_code.Auth::user()->display_running_no.'&lvl=1') }}" style="text-align: center;">
 										</p>
 										<a href="#" class="btn btn-sm btn-primary mb-4 copy-guest-link set_button set_text">
 											{{ isset($data['lang']['lang']['copy']) ? $data['lang']['lang']['copy'] :'复制'}}
@@ -92,7 +92,7 @@
 									{{ isset($data['lang']['lang']['url']) ? $data['lang']['lang']['url'] :'网址'}}:
 									<div class="button-inside">
 										<p class="mb-2">
-											<input type="text" name="agent_link" id="agent_link" class="form-control" value="{{ route('merchant_register', ['p='.Auth::user()->display_code.Auth::user()->display_running_no]) }}" style="text-align: center;">
+											<input type="text" name="agent_link" id="agent_link" class="form-control" value="{{ route('merchant_register', 'p='.Auth::user()->display_code.Auth::user()->display_running_no.'&lvl=2') }}" style="text-align: center;">
 										</p>
 										<a href="#" class="btn btn-sm btn-primary mb-4 copy-agent-link set_button set_text">
 											{{ isset($data['lang']['lang']['copy']) ? $data['lang']['lang']['copy'] :'复制'}}
@@ -230,7 +230,7 @@
   var canvas = new QRious({
     element: document.getElementById('qr-customer'),
     // value: "{{ route('register', 'p='.Auth::guard($data['userGuardRole'])->user()->display_code.Auth::guard($data['userGuardRole'])->user()->display_running_no) }}",
-    value: "{{ route('register', 'p='.Auth::guard($data['userGuardRole'])->user()->display_code.Auth::guard($data['userGuardRole'])->user()->display_running_no) }}",
+    value: "{{ route('merchant_register', 'p='.Auth::guard($data['userGuardRole'])->user()->display_code.Auth::guard($data['userGuardRole'])->user()->display_running_no.'&lvl=1') }}",
     size: '250',
     background: 'white',
     foreground: 'black',
@@ -261,18 +261,20 @@
 	// ctx.scale(10, scale);
 
 	ctx.fillStyle = "#000000";
-	ctx.fillRect(37, 217, 175, 30);
+	ctx.fillRect(37, 197, 175, 50);
 	ctx.fillStyle = "#FFFFFF";
-	
-	ctx.font = '18pt Signika Negative';
-	ctx.textAlign = 'center';
-	ctx.textBaseline = 'middle';
 
 	var x = size / 1.6;
-	var y = size / 0.855;
+
+	ctx.font = 'bold 11pt Signika Negative';
+	ctx.textAlign = 'center';
+	ctx.textBaseline = 'middle';
+	ctx.fillText('CUSTOMER', x, 213);
+
+	ctx.font = '18pt Signika Negative';
 
 	var textString = "{{ Auth::guard($data['userGuardRole'])->user()->display_code }}{{ Auth::guard($data['userGuardRole'])->user()->display_running_no }}";
-	ctx.fillText(textString, x, y);
+	ctx.fillText(textString, x, 239);
 
 	function downloadURI(uri, name) {
     var link = document.createElement('a');
@@ -298,7 +300,7 @@
   var canvas = new QRious({
     element: document.getElementById('qr-agent'),
     // value: "{{ route('register', 'p='.Auth::guard($data['userGuardRole'])->user()->display_code.Auth::guard($data['userGuardRole'])->user()->display_running_no) }}",
-    value: "{{ route('merchant_register', 'p='.Auth::guard($data['userGuardRole'])->user()->display_code.Auth::guard($data['userGuardRole'])->user()->display_running_no) }}",
+    value: "{{ route('merchant_register', 'p='.Auth::guard($data['userGuardRole'])->user()->display_code.Auth::guard($data['userGuardRole'])->user()->display_running_no.'&lvl=2') }}",
     size: '250',
     background: 'white',
     foreground: 'black',
@@ -329,18 +331,20 @@
 	// ctx.scale(10, scale);
 
 	ctx.fillStyle = "#000000";
-	ctx.fillRect(37, 217, 175, 30);
+	ctx.fillRect(37, 197, 175, 50);
 	ctx.fillStyle = "#FFFFFF";
-	
-	ctx.font = '18pt Signika Negative';
-	ctx.textAlign = 'center';
-	ctx.textBaseline = 'middle';
 
 	var x = size / 1.6;
-	var y = size / 0.855;
+
+	ctx.font = 'bold 11pt Signika Negative';
+	ctx.textAlign = 'center';
+	ctx.textBaseline = 'middle';
+	ctx.fillText('AGENT', x, 213);
+
+	ctx.font = '18pt Signika Negative';
 
 	var textString = "{{ Auth::guard($data['userGuardRole'])->user()->display_code }}{{ Auth::guard($data['userGuardRole'])->user()->display_running_no }}";
-	ctx.fillText(textString, x, y);
+	ctx.fillText(textString, x, 239);
 
 	function downloadURI(uri, name) {
     var link = document.createElement('a');

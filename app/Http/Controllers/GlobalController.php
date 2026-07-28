@@ -2490,7 +2490,22 @@ class GlobalController extends Controller
                              ->orderBy('sort_level', 'asc')
                              ->get();
 
+            // The buyer's own agent-level rate is the baseline every upline's
+            // override is measured against, so the closest upline is only
+            // paid the difference between their tier and the buyer's tier
+            // (e.g. Shop 20% - Agent 15% = 5%), not the upline's full rate.
             $cumulative_rate = 0;
+
+            $buyer = Agent::where('code', $code)->where('status', '1')->first();
+            if(!empty($buyer->id)){
+                $buyer_setting_override_hierarchy_commission = SettingOverrideHierarchyCommission::where('agent_lvl', $buyer->lvl)
+                                                                                                    ->where('status', '1')
+                                                                                                    ->first();
+
+                if(!empty($buyer_setting_override_hierarchy_commission->id)){
+                    $cumulative_rate = !empty($buyer_setting_override_hierarchy_commission->comm_amount) ? $buyer_setting_override_hierarchy_commission->comm_amount : 0;
+                }
+            }
 
             foreach($affs as $aff){
                 $setting_override_hierarchy_commission = SettingOverrideHierarchyCommission::where('agent_lvl', $aff->lvl)

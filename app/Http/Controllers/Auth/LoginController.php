@@ -31,9 +31,10 @@ class LoginController extends Controller
 
     /**
      * The guard that actually authenticated the current request.
-     * Storefront accounts can be either a Member (web guard / users table)
-     * or an Agent (agent guard / agents table) - attemptLogin() below tries
-     * both and records here which one succeeded.
+     * Storefront accounts can be a Member (web guard / users table), an
+     * Agent (agent guard / agents table), or a Merchant (merchant guard /
+     * merchants table) - attemptLogin() below tries all three and records
+     * here which one succeeded.
      *
      * @var string
      */
@@ -60,7 +61,8 @@ class LoginController extends Controller
     }
 
     /**
-     * Attempt to log the user in as a Member first, then as an Agent.
+     * Attempt to log the user in as a Member first, then as an Agent,
+     * then as a Merchant.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return bool
@@ -77,6 +79,11 @@ class LoginController extends Controller
 
         if (Auth::guard('agent')->attempt($credentials, $remember)) {
             $this->authGuardUsed = 'agent';
+            return true;
+        }
+
+        if (Auth::guard('merchant')->attempt($credentials, $remember)) {
+            $this->authGuardUsed = 'merchant';
             return true;
         }
 
