@@ -21,7 +21,7 @@
                 @endforeach
 
                 <a href="{{ route('listing') }}" class="la-gallery__item la-reveal">
-                    <img src="{{ asset('images/800x800.png') }}" alt="All Products" loading="lazy">
+                    <img src="{{ !empty($data['website_setting']->all_products_tile_image) ? \App\Http\Controllers\GlobalController::get_production_url($data['website_setting']->all_products_tile_image) : asset('images/800x800.png') }}" alt="All Products" loading="lazy">
                     <span class="la-gallery__label">All Products <i class="fa fa-arrow-right" aria-hidden="true"></i></span>
                 </a>
             </div>

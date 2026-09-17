@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 // use Illuminate\Support\Facades\Input;
 use App\Category;
 use App\CategoryImage;
+use App\WebsiteSetting;
 
 use App\Http\Controllers\GlobalController;
 use Validator, Redirect, Toastr, DB, File, Auth;
@@ -72,6 +73,25 @@ class CategoryController extends Controller
 
 
         return view('backend.categories.index', ['categories'=>$categories]);
+    }
+
+    public function save_all_products_tile_image(Request $request)
+    {
+        if (!empty($request->file('all_products_tile_image'))) {
+            $files = $request->file('all_products_tile_image');
+            $name = $files->getClientOriginalName();
+            $exp = explode(".", $name);
+            $file_ext = end($exp);
+            $name = md5($name . date('Y-m-d H:i:s')) . '.' . $file_ext;
+
+            $files->move(GlobalController::get_image_path("uploads/all_products_tile/"), $name);
+
+            $website_setting = WebsiteSetting::find(1);
+            $website_setting->all_products_tile_image = "uploads/all_products_tile/" . $name;
+            $website_setting->save();
+        }
+
+        return redirect()->back()->with('success', 'Updated Successfully');
     }
 
     /**

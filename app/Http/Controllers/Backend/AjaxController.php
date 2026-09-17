@@ -48,6 +48,7 @@ use App\UserShippingAddress;
 use App\BankAccount;
 use App\Bundle;
 use App\SettingSignatureDish;
+use App\SettingWhyChooseUs;
 use App\AgentLevelRecord;
 use App\PaymentBank;
 use App\PickupContact;
@@ -508,6 +509,168 @@ class AjaxController extends Controller
     $delete = SettingSignatureDish::find($id);
     File::delete($delete->image);
     $delete = $delete->delete();
+  }
+
+  public function uploadWhyChooseUsImage(Request $request)
+  {
+    $files = $request->file('file');
+    $name = $files->getClientOriginalName();
+    $exp = explode(".", $name);
+    $file_ext = end($exp);
+    $name = md5($name . date('Y-m-d H:i:s')) . '.' . $file_ext;
+
+    $input = [];
+    $input['status'] = '1';
+    $input['image'] = "uploads/why_choose_us/" . $name;
+    $input['title'] = 'New Ingredient';
+    $input['subtitle'] = '';
+
+    $files->move(GlobalController::get_image_path("uploads/why_choose_us/"), $name);
+
+    SettingWhyChooseUs::create($input);
+
+    return $this->render_why_choose_us_list();
+  }
+
+  public function LoadWhyChooseUsImage()
+  {
+    return $this->render_why_choose_us_list();
+  }
+
+  private function render_why_choose_us_list()
+  {
+    $select = SettingWhyChooseUs::where('status', '1')->orderBy('sort_level', 'asc')->get();
+
+    $image_list = "";
+    if (!$select->isEmpty()) {
+      foreach ($select as $key => $value) {
+        $image_list .= '<div class="product-image-thumbnail" data-id="' . $value->id . '">
+                            <div class="form-group">
+                              <div class="delete-image-box">
+                                <a href="#" class="delete-image" data-id="' . $value->id . '">
+                                  <i class="bi bi-trash"></i>
+                                </a>
+                              </div>
+                              <div class="product-image-thumbnail-img" style="background-image: url(' . GlobalController::get_production_url($value->image) . ')"></div>
+                            </div>
+                            <div class="form-group">
+                              <input type="text" name="why_choose_us_title" class="form-control why_choose_us_title" data-id="' . $value->id . '" placeholder="Title" value="' . e($value->title) . '">
+                            </div>
+                            <div class="form-group">
+                              <input type="text" name="why_choose_us_subtitle" class="form-control why_choose_us_subtitle" data-id="' . $value->id . '" placeholder="Subtitle" value="' . e($value->subtitle) . '">
+                            </div>
+                          </div>';
+      }
+    }
+
+    return $image_list;
+  }
+
+  public function DeleteWhyChooseUsImage($id)
+  {
+    $delete = SettingWhyChooseUs::find($id);
+    File::delete($delete->image);
+    $delete = $delete->delete();
+  }
+
+  public function changeWhyChooseUsTitle(Request $request)
+  {
+    $item = SettingWhyChooseUs::find($request->id);
+    $item->update(['title' => $request->title]);
+  }
+
+  public function changeWhyChooseUsSubtitle(Request $request)
+  {
+    $item = SettingWhyChooseUs::find($request->id);
+    $item->update(['subtitle' => $request->subtitle]);
+  }
+
+  public function SortWhyChooseUs(Request $request)
+  {
+    $item = SettingWhyChooseUs::find($request->mid);
+    $item->update(['sort_level' => $request->number]);
+  }
+
+  public function updateWhyChooseUsHeading(Request $request)
+  {
+    $setting = WebsiteSetting::find(1);
+    $setting->update([
+      'why_choose_us_eyebrow' => $request->eyebrow,
+      'why_choose_us_heading' => $request->heading,
+    ]);
+  }
+
+  public function addBrandIntroFeature()
+  {
+    \App\SettingBrandIntroFeature::create([
+      'icon' => 'fa fa-star',
+      'title' => 'New Feature',
+      'subtitle' => '',
+      'sort_level' => (\App\SettingBrandIntroFeature::max('sort_level') ?? 0) + 1,
+      'status' => '1',
+    ]);
+
+    return $this->render_brand_intro_feature_list();
+  }
+
+  public function LoadBrandIntroFeatures()
+  {
+    return $this->render_brand_intro_feature_list();
+  }
+
+  private function render_brand_intro_feature_list()
+  {
+    $select = \App\SettingBrandIntroFeature::where('status', '1')->orderBy('sort_level', 'asc')->get();
+
+    $html = "";
+    foreach ($select as $value) {
+      $html .= '<div class="product-image-thumbnail" data-id="' . $value->id . '">
+                    <div class="form-group">
+                      <div class="delete-image-box">
+                        <a href="#" class="delete-image" data-id="' . $value->id . '">
+                          <i class="bi bi-trash"></i>
+                        </a>
+                      </div>
+                      <div class="product-image-thumbnail-img" style="display:flex;align-items:center;justify-content:center;font-size:32px;"><i class="' . e($value->icon) . '"></i></div>
+                    </div>
+                    <div class="form-group">
+                      <input type="text" name="brand_intro_feature_icon" class="form-control brand_intro_feature_icon" data-id="' . $value->id . '" placeholder="fa fa-users" value="' . e($value->icon) . '">
+                    </div>
+                    <div class="form-group">
+                      <input type="text" name="brand_intro_feature_title" class="form-control brand_intro_feature_title" data-id="' . $value->id . '" placeholder="Title" value="' . e($value->title) . '">
+                    </div>
+                    <div class="form-group">
+                      <input type="text" name="brand_intro_feature_subtitle" class="form-control brand_intro_feature_subtitle" data-id="' . $value->id . '" placeholder="Subtitle" value="' . e($value->subtitle) . '">
+                    </div>
+                  </div>';
+    }
+
+    return $html;
+  }
+
+  public function DeleteBrandIntroFeature($id)
+  {
+    \App\SettingBrandIntroFeature::find($id)->delete();
+  }
+
+  public function changeBrandIntroFeatureIcon(Request $request)
+  {
+    \App\SettingBrandIntroFeature::find($request->id)->update(['icon' => $request->icon]);
+  }
+
+  public function changeBrandIntroFeatureTitle(Request $request)
+  {
+    \App\SettingBrandIntroFeature::find($request->id)->update(['title' => $request->title]);
+  }
+
+  public function changeBrandIntroFeatureSubtitle(Request $request)
+  {
+    \App\SettingBrandIntroFeature::find($request->id)->update(['subtitle' => $request->subtitle]);
+  }
+
+  public function SortBrandIntroFeature(Request $request)
+  {
+    \App\SettingBrandIntroFeature::find($request->mid)->update(['sort_level' => $request->number]);
   }
 
   public function uploadCategoryImage(Request $request, $id)

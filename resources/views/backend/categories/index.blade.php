@@ -1,6 +1,28 @@
 @extends('layouts.admin_app')
 
 @section('content')
+@if(Session::has('success'))
+<div class="alert alert-success">{{ Session::get('success') }}</div>
+@endif
+
+<div class="container-box form-group">
+	<h3>All Products Tile Image (Homepage "Explore Our Range")</h3>
+	<hr>
+	<p class="text-muted">This image is used on the homepage's "Explore Our Range" section, for the last tile that links to all products.</p>
+	<form method="POST" action="{{ route('save_all_products_tile_image') }}" enctype="multipart/form-data">
+		@csrf
+		<div class="form-group">
+			@if(!empty($data['website_setting']->all_products_tile_image))
+			<img src="{{ \App\Http\Controllers\GlobalController::get_production_url($data['website_setting']->all_products_tile_image) }}" style="max-width: 200px; display:block; margin-bottom: 10px;">
+			@endif
+			<input type="file" name="all_products_tile_image" class="form-control" accept="image/*" style="max-width: 400px;">
+		</div>
+		<button type="submit" class="btn btn-primary btn-sm">
+			<i class="fa fa-check"></i> {{ isset($data['backendlang']['backendlang']['Save_Changes']) ? $data['backendlang']['backendlang']['Save_Changes'] :'Save Changes' }}
+		</button>
+	</form>
+</div>
+
 <div class="container-box form-group">
 	<h3>
 		 {{ isset($data['backendlang']['backendlang']['Filter']) ? $data['backendlang']['backendlang']['Filter'] :'' }}

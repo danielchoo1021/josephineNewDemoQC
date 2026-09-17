@@ -720,6 +720,8 @@
                     !empty($data['permission']['permission'][Auth::guard($data['userGuardRole'])->user()->permission_lvl]['setting-payment-gateway']))
                     <li class="sidebar-item has-sub
                                {{ (Request::segment(1) == 'setting_banner' ||
+                                   Request::segment(1) == 'setting_why_choose_us' ||
+                                   Request::segment(1) == 'setting_brand_intro' ||
                                    Request::segment(1) == 'setting_shipping_fee' ||
                                    Request::segment(1) == 'setting_cod_address' ||
                                    Request::segment(1) == 'setting_pick_up_address' ||
@@ -745,7 +747,9 @@
                             @if(!empty($data['permission']['permission'][Auth::guard($data['userGuardRole'])->user()->permission_lvl]['setting-banner-list']))
                             <li class="submenu-item has-sub
                                     {{ (Request::segment(1) == 'setting_website_messages' ||
-                                        Request::segment(1) == 'setting_banner' || 
+                                        Request::segment(1) == 'setting_banner' ||
+                                        Request::segment(1) == 'setting_why_choose_us' ||
+                                        Request::segment(1) == 'setting_brand_intro' ||
                                         Request::segment(1) == 'setting_second_banner' ||
                                         Request::segment(1) == 'setting_home_page' || 
                                         Request::segment(1) == 'setting_home_video' ||
@@ -772,6 +776,18 @@
                                         </a>
                                     </li>
                                     @endif
+
+                                    <li class="submenu-item {{ (Request::segment(1) == 'setting_why_choose_us') ? 'active' : '' }}">
+                                        <a href="{{ route('setting_why_choose_us') }}" class="submenu-link">
+                                            Why Choose Us / Ingredients
+                                        </a>
+                                    </li>
+
+                                    <li class="submenu-item {{ (Request::segment(1) == 'setting_brand_intro') ? 'active' : '' }}">
+                                        <a href="{{ route('setting_brand_intro') }}" class="submenu-link">
+                                            Brand Introduction
+                                        </a>
+                                    </li>
 
                                     @if(!empty($data['permission']['permission'][Auth::guard($data['userGuardRole'])->user()->permission_lvl]['setting-second-banner']))
                                     <li class="submenu-item {{ (Request::segment(1) == 'setting_second_banner') ? 'active' : '' }}">

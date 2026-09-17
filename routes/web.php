@@ -342,6 +342,7 @@ Route::group(['middleware' => 'auth:admin,merchant,staff'], function () {
 	Route::resource('point_malls', 'Backend\PointMallController', ['as'=> 'point_mall']);
 
 	Route::resource('categories', 'Backend\CategoryController', ['as'=> 'category']);
+	Route::post('save_all_products_tile_image', 'Backend\CategoryController@save_all_products_tile_image')->name('save_all_products_tile_image');
 	Route::resource('brands', 'Backend\BrandController', ['as'=> 'brand']);
 	Route::resource('promotions', 'Backend\PromotionController', ['as'=> 'promotion']);
 	Route::resource('newsletters', 'Backend\NewsletterController', ['as'=> 'newsletter']);
@@ -641,6 +642,9 @@ Route::group(['middleware' => 'auth:admin,merchant,staff'], function () {
 
 	Route::get('setting_banner', 'Backend\SettingController@setting_banner')->name('setting_banner');
 	Route::get('setting_signature_dish', 'Backend\SettingController@setting_signature_dish')->name('setting_signature_dish');
+	Route::get('setting_why_choose_us', 'Backend\SettingController@setting_why_choose_us')->name('setting_why_choose_us');
+	Route::get('setting_brand_intro', 'Backend\SettingController@setting_brand_intro')->name('setting_brand_intro');
+	Route::post('save_setting_brand_intro', 'Backend\SettingController@save_setting_brand_intro')->name('save_setting_brand_intro');
 	Route::get('setting_material', 'Backend\SettingController@setting_material')->name('setting_material');
 
 	Route::get('setting_pick_up_address', 'Backend\SettingController@setting_pick_up_address')->name('setting_pick_up_address');
@@ -823,6 +827,22 @@ Route::group(['middleware' => 'auth:admin,merchant,staff'], function () {
 	Route::post('/uploadSignatureDishImage/', 'Backend\AjaxController@uploadSignatureDishImage')->name('uploadSignatureDishImage');
 	Route::get('/LoadSignatureDishImage', 'Backend\AjaxController@LoadSignatureDishImage')->name('LoadSignatureDishImage');
 	Route::get('/DeleteSignatureDishImage/{id}', 'Backend\AjaxController@DeleteSignatureDishImage')->name('DeleteSignatureDishImage');
+
+	Route::post('/uploadWhyChooseUsImage/', 'Backend\AjaxController@uploadWhyChooseUsImage')->name('uploadWhyChooseUsImage');
+	Route::get('/LoadWhyChooseUsImage', 'Backend\AjaxController@LoadWhyChooseUsImage')->name('LoadWhyChooseUsImage');
+	Route::get('/DeleteWhyChooseUsImage/{id}', 'Backend\AjaxController@DeleteWhyChooseUsImage')->name('DeleteWhyChooseUsImage');
+	Route::post('/changeWhyChooseUsTitle', 'Backend\AjaxController@changeWhyChooseUsTitle')->name('changeWhyChooseUsTitle');
+	Route::post('/changeWhyChooseUsSubtitle', 'Backend\AjaxController@changeWhyChooseUsSubtitle')->name('changeWhyChooseUsSubtitle');
+	Route::post('/SortWhyChooseUs', 'Backend\AjaxController@SortWhyChooseUs')->name('SortWhyChooseUs');
+	Route::post('/updateWhyChooseUsHeading', 'Backend\AjaxController@updateWhyChooseUsHeading')->name('updateWhyChooseUsHeading');
+
+	Route::post('/addBrandIntroFeature', 'Backend\AjaxController@addBrandIntroFeature')->name('addBrandIntroFeature');
+	Route::get('/LoadBrandIntroFeatures', 'Backend\AjaxController@LoadBrandIntroFeatures')->name('LoadBrandIntroFeatures');
+	Route::get('/DeleteBrandIntroFeature/{id}', 'Backend\AjaxController@DeleteBrandIntroFeature')->name('DeleteBrandIntroFeature');
+	Route::post('/changeBrandIntroFeatureIcon', 'Backend\AjaxController@changeBrandIntroFeatureIcon')->name('changeBrandIntroFeatureIcon');
+	Route::post('/changeBrandIntroFeatureTitle', 'Backend\AjaxController@changeBrandIntroFeatureTitle')->name('changeBrandIntroFeatureTitle');
+	Route::post('/changeBrandIntroFeatureSubtitle', 'Backend\AjaxController@changeBrandIntroFeatureSubtitle')->name('changeBrandIntroFeatureSubtitle');
+	Route::post('/SortBrandIntroFeature', 'Backend\AjaxController@SortBrandIntroFeature')->name('SortBrandIntroFeature');
 
 	Route::post('/uploadMainPageImage/', 'Backend\AjaxController@uploadMainPageImage')->name('uploadMainPageImage');
 	Route::get('/LoadMainPageImage', 'Backend\AjaxController@LoadMainPageImage')->name('LoadMainPageImage');

@@ -912,6 +912,42 @@ class SettingController extends Controller
         return view('backend.settings.setting_signature_dish');
     }
 
+    public function setting_why_choose_us()
+    {
+        return view('backend.settings.setting_why_choose_us');
+    }
+
+    public function setting_brand_intro()
+    {
+        $features = \App\SettingBrandIntroFeature::where('status', '1')->orderBy('sort_level', 'asc')->get();
+
+        return view('backend.settings.setting_brand_intro', ['features' => $features]);
+    }
+
+    public function save_setting_brand_intro(Request $request)
+    {
+        $website_setting = WebsiteSetting::find(1);
+
+        $website_setting->brand_intro_eyebrow = $request->brand_intro_eyebrow;
+        $website_setting->brand_intro_heading = $request->brand_intro_heading;
+        $website_setting->brand_intro_body = $request->brand_intro_body;
+
+        if (!empty($request->file('brand_intro_image'))) {
+            $files = $request->file('brand_intro_image');
+            $name = $files->getClientOriginalName();
+            $exp = explode(".", $name);
+            $file_ext = end($exp);
+            $name = md5($name . date('Y-m-d H:i:s')) . '.' . $file_ext;
+
+            $files->move(GlobalController::get_image_path("uploads/brand_intro/"), $name);
+            $website_setting->brand_intro_image = "uploads/brand_intro/" . $name;
+        }
+
+        $website_setting->save();
+
+        return redirect()->back()->with('success', 'Updated Successfully');
+    }
+
     public function setting_dual_commission()
     {
         $levels = AgentLevel::where('status', '1')->get();
