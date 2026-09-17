@@ -1899,6 +1899,9 @@ class GlobalController extends Controller
         $explo_check = explode('.', $localCheck);
         if($explo_check[0] == 'demoaccount'){
             $productionURL = "https://newseller.vesson.my";
+        }elseif(isset($_SERVER['REQUEST_URI']) && preg_match('#^/josephineNewDemoQC/#', $_SERVER['REQUEST_URI'])){
+            $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+            $productionURL = $scheme."://".$localCheck."/josephineNewDemoQC";
         }elseif($localCheck != '127.0.0.1'){
             $productionURL = "https://".$localCheck."/demoqc/public";
         }else{
