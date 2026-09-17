@@ -1903,7 +1903,7 @@ class GlobalController extends Controller
             $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
             $productionURL = $scheme."://".$localCheck."/josephineNewDemoQC";
         }elseif($localCheck != '127.0.0.1'){
-            $productionURL = "https://".$localCheck."/demoqc/public";
+            $productionURL = "https://".$localCheck;
         }else{
             $productionURL = "http://".$localCheck.":8000";
         }
