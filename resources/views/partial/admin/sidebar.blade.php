@@ -777,33 +777,35 @@
                                     </li>
                                     @endif
 
-                                    <li class="submenu-item {{ (Request::segment(1) == 'setting_why_choose_us') ? 'active' : '' }}">
-                                        <a href="{{ route('setting_why_choose_us') }}" class="submenu-link">
-                                            Why Choose Us / Ingredients
-                                        </a>
-                                    </li>
-
                                     <li class="submenu-item {{ (Request::segment(1) == 'setting_brand_intro') ? 'active' : '' }}">
                                         <a href="{{ route('setting_brand_intro') }}" class="submenu-link">
                                             Brand Introduction
                                         </a>
                                     </li>
 
-                                    @if(!empty($data['permission']['permission'][Auth::guard($data['userGuardRole'])->user()->permission_lvl]['setting-second-banner']))
+                                    <li class="submenu-item {{ (Request::segment(1) == 'setting_why_choose_us') ? 'active' : '' }}">
+                                        <a href="{{ route('setting_why_choose_us') }}" class="submenu-link">
+                                            Ingredients
+                                        </a>
+                                    </li>
+
+                                    {{-- Not in use, commented out per request --}}
+                                    <!-- @if(!empty($data['permission']['permission'][Auth::guard($data['userGuardRole'])->user()->permission_lvl]['setting-second-banner']))
                                     <li class="submenu-item {{ (Request::segment(1) == 'setting_second_banner') ? 'active' : '' }}">
                                         <a href="{{ route('setting_second_banner') }}" class="submenu-link">
                                             {{ isset($data['backendlang']['backendlang']['Second_Banner']) ? $data['backendlang']['backendlang']['Second_Banner'] : ''  }}
                                         </a>
                                     </li>
-                                    @endif
+                                    @endif -->
 
-                                    @if(!empty($data['permission']['permission'][Auth::guard($data['userGuardRole'])->user()->permission_lvl]['setting-home-page-list']))
+                                    {{-- Not in use, commented out per request --}}
+                                    <!-- @if(!empty($data['permission']['permission'][Auth::guard($data['userGuardRole'])->user()->permission_lvl]['setting-home-page-list']))
                                     <li class="submenu-item {{ (Request::segment(1) == 'setting_home_page') ? 'active' : '' }}">
                                         <a href="{{ route('setting_home_page') }}" class="submenu-link">
                                             {{ isset($data['backendlang']['backendlang']['Two_Highlight']) ? $data['backendlang']['backendlang']['Two_Highlight'] : ''  }}
                                         </a>
                                     </li>
-                                    @endif
+                                    @endif -->
 
                                     @if(!empty($data['permission']['permission'][Auth::guard($data['userGuardRole'])->user()->permission_lvl]['setting-home-videos']))
                                     <li class="submenu-item {{ (Request::segment(1) == 'setting_home_video') ? 'active' : '' }}">
@@ -821,13 +823,14 @@
                                     </li>
                                     @endif
 
-                                    @if(!empty($data['permission']['permission'][Auth::guard($data['userGuardRole'])->user()->permission_lvl]['setting-home-overview']))
+                                    {{-- Not in use, commented out per request --}}
+                                    <!-- @if(!empty($data['permission']['permission'][Auth::guard($data['userGuardRole'])->user()->permission_lvl]['setting-home-overview']))
                                     <li class="submenu-item {{ (Request::segment(1) == 'setting_home_overview') ? 'active' : '' }}">
                                         <a href="{{ route('setting_home_overview') }}" class="submenu-link">
                                             {{ isset($data['backendlang']['backendlang']['Overview']) ? $data['backendlang']['backendlang']['Overview'] : ''  }}
                                         </a>
                                     </li>
-                                    @endif
+                                    @endif -->
 
                                     @if(!empty($data['permission']['permission'][Auth::guard($data['userGuardRole'])->user()->permission_lvl]['setting-header-image']))
                                     <li class="submenu-item {{ (Request::segment(1) == 'setting_header') ? 'active' : '' }}">
