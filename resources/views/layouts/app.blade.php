@@ -4051,6 +4051,15 @@ li:hover .dropdown-menu {
 
 <script src="{{ asset('assets/js/tree.min.js') }}"></script>
 
+<script>
+    window.gtranslateSettings = {
+        default_language: "en",
+        languages: ["en", "zh-CN", "ms"],
+        wrapper_selector: ".gtranslate_wrapper",
+        flag_size: 24
+    };
+</script>
+<script src="https://cdn.gtranslate.net/widgets/latest/dropdown.js" defer></script>
 
 </body>
 

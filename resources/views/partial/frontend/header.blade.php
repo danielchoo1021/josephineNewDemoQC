@@ -49,12 +49,17 @@ Request::segment(1) == 'ForgetPassword')
                             @endforeach
                         </div>
                     </div>
-                    <div class="hide-header-icon" align="center" style=" padding: 10px 0px;">
+                    {{-- Hand-built language switcher disabled (incomplete translation coverage);
+                         replaced with the free GTranslate machine-translation widget. --}}
+                    <!-- <div class="hide-header-icon" align="center" style=" padding: 10px 0px;">
                         <select class="global_language" name="global_language" style="padding: 0.375rem 0.75rem; width: auto; -webkit-appearance: auto; z-index: 1000; border: 1px solid" onchange="changeLanguage(value);">
                             <option>{{ isset($data['lang']['lang']['language']) ? $data['lang']['lang']['language'] :'语言'}}</option>
                             <option value="1">{{ isset($data['lang']['lang']['chinese']) ? $data['lang']['lang']['chinese'] :'中文'}}</option>
                             <option value="2">{{ isset($data['lang']['lang']['english']) ? $data['lang']['lang']['english'] :'英文'}}</option>
                         </select>
+                    </div> -->
+                    <div class="hide-header-icon" align="center" style="padding: 10px 0px;">
+                        <div class="gtranslate_wrapper"></div>
                     </div>
                 </div>
             </div>
@@ -161,7 +166,10 @@ Request::segment(1) == 'ForgetPassword')
                         
                         <div class="menu-cart show-language-icon" style="position: relative;display:none">
                             @if(Auth::guard('agent')->check() || Auth::guard('web')->check() || Auth::guard('admin')->check())
-                                <a class="menu-icon -cart language-header-btn" href="#">
+                                {{-- Hand-built language icon/popup disabled (incomplete translation coverage);
+                                     replaced with the free GTranslate machine-translation widget. --}}
+                                <div class="gtranslate_wrapper mobile-gtranslate-wrapper"></div>
+                                <!-- <a class="menu-icon -cart language-header-btn" href="#">
                                     <img src="{{ asset('images/general/language_icon.png') }}" width="25px" alt="Language Icon">
                                 </a>
                                 <div style="position: absolute;
@@ -185,7 +193,7 @@ Request::segment(1) == 'ForgetPassword')
                                         {{ isset($data['lang']['lang']['english']) ? $data['lang']['lang']['english'] :'英文'}}
                                     </a>
                                 </div>
-                            </div>
+                            </div> -->
                         @else
                             <a class="menu-icon -cart top-profile-btn" href="#">
                                 <img src="{{ asset('images/general/icon_user.png') }}" width="33px" alt="User Icon">
