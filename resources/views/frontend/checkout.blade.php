@@ -223,7 +223,8 @@ input[name="payment_id"]:checked + img {
 										<b>{{ isset($data['lang']['lang']['product_detail']) ? $data['lang']['lang']['product_detail'] :'产品详细' }}</b>
 										<input type="text" class="create_link_id" id="create_link_id" value="{{ route('checkout') }}" style="height: 0; position: absolute; z-index: -1; padding: 0; border: none;">
 									</div>
-									@if(Auth::guard('web')->check() || 
+									{{-- Share Cart Link hidden per request (not needed for now) --}}
+									<!-- @if(Auth::guard('web')->check() ||
 										Auth::guard('agent')->check() &&
 										empty(request('cl')))
 									<div class="col-6" align="right">
@@ -231,7 +232,7 @@ input[name="payment_id"]:checked + img {
 											{{ isset($data['lang']['lang']['share_your_cart_link']) ? $data['lang']['lang']['share_your_cart_link'] :'分享购物车' }}
 										</a>
 									</div>
-									@endif
+									@endif -->
 								</div>
 							</div>
 							<hr>
