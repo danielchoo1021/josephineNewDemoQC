@@ -551,6 +551,10 @@
 							<button type="button" class="btn btn-primary btn-sm add-new-awb-no" data-toggle="modal" data-target="#myModal" data-id="">
 								{{ isset($data['backendlang']['backendlang']['Add_Awb_No']) ? $data['backendlang']['backendlang']['Add_Awb_No'] :'' }}
 							</button>
+							<br>
+							<button type="button" class="btn btn-outline-primary btn-sm courier_service_selection" data-toggle="modal" data-target="#courier_service" data-id="1" data-weight="{{ $transaction->weight }}" data-row="0">
+								{{ isset($data['backendlang']['backendlang']['Book_Courier']) ? $data['backendlang']['backendlang']['Book_Courier'] :'Book Courier' }}
+							</button>
 							@endif
 							@endif
 							@else
@@ -698,9 +702,9 @@
 	</div>
 </div>
 
-<div class="modal fade" id="courier_service" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="courier_service" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
 	<div class="modal-dialog modal-lg">
-		<div class="modaltracking_no" style="background: #fff;">
+		<div class="modal-content" style="background: #fff;">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 				<h4 class="modal-title" id="myModalLabel">{{ isset($data['backendlang']['backendlang']['We_Are_Looking_For_A_Courier_Service_For_You']) ? $data['backendlang']['backendlang']['We_Are_Looking_For_A_Courier_Service_For_You'] :'' }}...</h4>
@@ -708,7 +712,7 @@
 			<div class="modal-body">
 				<form method="POST" action="" class="courier_service_form">
 					@csrf
-					<div class="courier_service_list" style="overflow: auto;"></div>
+					<div class="courier_service_list" style="max-height: 60vh; overflow-y: auto;"></div>
 				</form>
 			</div>
 			<div class="modal-footer">

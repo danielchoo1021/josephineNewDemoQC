@@ -636,7 +636,7 @@
 
 <div class="modal fade" id="courier_service" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
-    <div class="modaltracking_no" style="background: #fff;">
+    <div class="modal-content" style="background: #fff;">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel">{{ isset($data['backendlang']['backendlang']['We_Are_Looking_For_A_Courier_Service_For_You']) ? $data['backendlang']['backendlang']['We_Are_Looking_For_A_Courier_Service_For_You'] :'' }}...</h4>

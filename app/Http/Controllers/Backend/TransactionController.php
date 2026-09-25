@@ -282,7 +282,7 @@ class TransactionController extends Controller
 
              $action = "EPParcelStatusBulk";
              $postparam = array(
-             'api'   => 'EP-QLTip0ZGl',
+             'api'   => 'EP-xid8Vmgnv',
               'bulk'  => array(
               array(
               'order_no'  => $TransactionTracking->order_number,
@@ -1616,7 +1616,7 @@ class TransactionController extends Controller
 
         $action = "EPTrackingBulk";
         $postparam = array(
-        'api'   => 'EP-QLTip0ZGl',
+        'api'   => 'EP-xid8Vmgnv',
         'bulk'  => array(
         array(
         'awb_no'    => $transaction->tracking_no,

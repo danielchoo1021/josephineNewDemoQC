@@ -2247,7 +2247,7 @@ class AjaxController extends Controller
 
     $action = "EPRateCheckingBulk";
     $postparam = array(
-      'api'   => 'EP-QLTip0ZGl',
+      'api'   => 'EP-xid8Vmgnv',
       'bulk'  => array(
         array(
           'pick_code' => $pick_code,
@@ -2293,38 +2293,36 @@ class AjaxController extends Controller
     foreach ($json->result as $value) {
       if ($value->status == 'Success') {
         foreach ($value->rates as $key => $value2) {
-          if ($value2->courier_name == 'Pgeon' && $value2->service_detail == 'pickup') {
-            $checked = ($key == 0) ? 'checked' : '';
+          $checked = ($key == 0) ? 'checked' : '';
 
-            $displayRates .= "<tr>
-                                                <td>
-                                                    <input type='hidden' name='tid' value='" . $request->tid . "'>
-                                                    <input type='hidden' name='rowid' value='" . $request->row . "'>
-                                                    <input type='hidden' name='Inweight' value='" . $request->weight . "'>
-                                                    <input type='hidden' name='collect_date' value='" . $value2->pickup_date . "'>
-                                                    <input type='hidden' name='courier_logo' value='" . $value2->courier_logo . "'>
-                                                    <div class='radio'>
-                                                        <label>
-                                                            <input name='service_id' type='radio' class='ace' " . $checked . " value='" . $value2->service_id . "' />
-                                                            <span class='lbl'></span>
-                                                        </label>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <img src='" . $value2->courier_logo . "' width='100px'>
-                                                </td>
-                                                <td>
-                                                    " . $value2->service_id . " - " . $value2->courier_name . "
-                                                    <br>
-                                                    RM " . $value2->price . "
-                                                    <br>
-                                                    <span class='service_detail'>" . $value2->service_detail . "</span>";
+          $displayRates .= "<tr>
+                                              <td>
+                                                  <input type='hidden' name='tid' value='" . $request->tid . "'>
+                                                  <input type='hidden' name='rowid' value='" . $request->row . "'>
+                                                  <input type='hidden' name='Inweight' value='" . $request->weight . "'>
+                                                  <input type='hidden' name='collect_date' value='" . $value2->pickup_date . "'>
+                                                  <input type='hidden' name='courier_logo' value='" . $value2->courier_logo . "'>
+                                                  <div class='radio'>
+                                                      <label>
+                                                          <input name='service_id' type='radio' class='ace' " . $checked . " value='" . $value2->service_id . "' />
+                                                          <span class='lbl'></span>
+                                                      </label>
+                                                  </div>
+                                              </td>
+                                              <td>
+                                                  <img src='" . $value2->courier_logo . "' width='100px'>
+                                              </td>
+                                              <td>
+                                                  " . $value2->service_id . " - " . $value2->courier_name . "
+                                                  <br>
+                                                  RM " . $value2->price . "
+                                                  <br>
+                                                  <span class='service_detail'>" . $value2->service_detail . "</span>";
 
-            $displayRates .=        "</td>
-                                                 <td>" . $value2->scheduled_start_date . "</td>
-                                                 <td>" . $value2->pickup_date . "</td>
-                                          </tr>";
-          }
+          $displayRates .=        "</td>
+                                               <td>" . $value2->scheduled_start_date . "</td>
+                                               <td>" . $value2->pickup_date . "</td>
+                                        </tr>";
         }
       } else {
 
@@ -2375,7 +2373,7 @@ class AjaxController extends Controller
 
     $action = "EPSubmitOrderBulk";
     $postparam = array(
-      'api'   => 'EP-QLTip0ZGl',
+      'api'   => 'EP-xid8Vmgnv',
       'bulk'  => array(
         array(
           'weight'    => $weight,
@@ -2444,7 +2442,7 @@ class AjaxController extends Controller
 
       $action = "EPPayOrderBulk";
       $postparam = array(
-        'api'   => 'EP-QLTip0ZGl',
+        'api'   => 'EP-xid8Vmgnv',
         'bulk'  => array(
           array(
             'order_no'  => $value->order_number,
