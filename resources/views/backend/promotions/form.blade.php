@@ -248,6 +248,20 @@
 					</div>
 				</div>
 			</div>
+
+			<div class="form-group">
+				<div class="row">
+					<div class="col-sm-2">
+						<b>Referral Voucher:</b>
+					</div>
+					<div class="col-sm-10">
+						<label>
+							<input type="checkbox" name="is_referral_voucher" value="1" {{ (isset($promotion) && $promotion->is_referral_voucher == 1) ? 'checked' : '' }}>
+							<span class="lbl">When checked, this voucher is automatically given to both the referrer and the new registrant once the new registrant completes their registration package purchase.</span>
+						</label>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>		

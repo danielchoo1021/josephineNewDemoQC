@@ -9,7 +9,7 @@ class Promotion extends Model
 	protected $fillable = [
     	'dow', 'promotion_title', 'image', 'discount_code', 'amount_type', 'amount', 'quantity', 'limit_type', 'usage_limit', 'products', 'start_date', 'end_date', 'status', 'register_voucher',
     	'free_shipping', 'product_voucher', 'sorting', 'display_voucher','minSpend','maxCapped',
-        'merchant_id'
+        'merchant_id', 'is_referral_voucher'
     ];
 
 	public function getDiscountAttribute()

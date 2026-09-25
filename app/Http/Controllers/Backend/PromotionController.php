@@ -91,15 +91,20 @@ class PromotionController extends Controller
         $promotions = $promotions->paginate($per_page)->appends($queries);
 
         $available = [];
+        $assigned = [];
         $redeemed = [];
         foreach($promotions as $promotion){
-            $transaction = AppliedPromotion::select(DB::raw('COUNT(id) AS totalRedeemed'))->where('promotion_id', $promotion->id)->whereIn('status', ['1', '2'])->first();
-            
-            $available[$promotion->id] = (float)$promotion->quantity - (float)$transaction->totalRedeemed;
-            $redeemed[$promotion->id] = $transaction->totalRedeemed;
+            $totalAssigned = AppliedPromotion::where('promotion_id', $promotion->id)->count();
+            $totalRedeemed = AppliedPromotion::where('promotion_id', $promotion->id)->whereIn('status', ['1', '2'])->count();
+
+            // Available stock is based on how many copies have been ASSIGNED (given out to a
+            // user, whether redeemed yet or not), not how many have actually been redeemed.
+            $available[$promotion->id] = (float)$promotion->quantity - (float)$totalAssigned;
+            $assigned[$promotion->id] = $totalAssigned;
+            $redeemed[$promotion->id] = $totalRedeemed;
         }
 
-        return view('backend.promotions.index', ['promotions'=>$promotions], compact('available', 'redeemed'));
+        return view('backend.promotions.index', ['promotions'=>$promotions], compact('available', 'assigned', 'redeemed'));
     }
 
     /**
@@ -182,14 +187,15 @@ class PromotionController extends Controller
         $input['free_shipping'] = $free_shipping;
         $input['display_voucher'] = $display_voucher;
         $input['product_voucher'] = $product_voucher;
+        $input['is_referral_voucher'] = isset($request->is_referral_voucher) ? 1 : 0;
         $input['minSpend'] = !empty($request->minSpend) ? $request->minSpend : '';
         $input['maxCapped'] = !empty($request->maxCapped) ? $request->maxCapped : '';
         if(Auth::guard('merchant')->check()){
         $input['merchant_id'] = Auth::user()->code;
         }
-        
+
         if(!empty($request->image)){
-            $files = $request->file('image'); 
+            $files = $request->file('image');
             $name = $files->getClientOriginalName();
             $exp = explode(".", $name);
             $file_ext = end($exp);
@@ -355,6 +361,7 @@ class PromotionController extends Controller
         $input['free_shipping'] = $request->free_shipping;
         $input['display_voucher'] = $request->display_voucher;
         $input['product_voucher'] = $request->product_voucher;
+        $input['is_referral_voucher'] = isset($request->is_referral_voucher) ? 1 : 0;
         $input['minSpend'] = !empty($request->minSpend) ? $request->minSpend : '';
         $input['maxCapped'] = !empty($request->maxCapped) ? $request->maxCapped : '';
 

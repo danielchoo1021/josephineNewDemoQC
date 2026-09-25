@@ -7157,6 +7157,13 @@ class HomeController extends Controller
                         }
                     }
 
+                    if (!empty($get_merchant_register->id) && !empty($transaction->register_product)) {
+                        $issue_referral_vouchers = GlobalController::issue_referral_vouchers($get_merchant_register->code, $get_merchant_register->master_id);
+                        if ($issue_referral_vouchers != 'ok') {
+                            throw new \Exception($issue_referral_vouchers);
+                        }
+                    }
+
                     $rebate_commission = GlobalController::rebate_commission($transaction->user_id, $transaction->transaction_no);
                     if($rebate_commission != 'ok'){
                         throw new \Exception($rebate_commission);
@@ -7231,6 +7238,13 @@ class HomeController extends Controller
                         $upgrade_agent_with_package = GlobalController::upgrade_agent_with_package($transaction->transaction_no);
                         if($upgrade_agent_with_package != 'ok'){
                             throw new \Exception($upgrade_agent_with_package);
+                        }
+                    }
+
+                    if (!empty($get_merchant_register->id) && !empty($transaction->register_product)) {
+                        $issue_referral_vouchers = GlobalController::issue_referral_vouchers($get_merchant_register->code, $get_merchant_register->master_id);
+                        if ($issue_referral_vouchers != 'ok') {
+                            throw new \Exception($issue_referral_vouchers);
                         }
                     }
 
@@ -7350,6 +7364,13 @@ class HomeController extends Controller
                         }
                     }
 
+                    if (!empty($get_merchant_register->id) && !empty($transaction->register_product)) {
+                        $issue_referral_vouchers = GlobalController::issue_referral_vouchers($get_merchant_register->code, $get_merchant_register->master_id);
+                        if ($issue_referral_vouchers != 'ok') {
+                            throw new \Exception($issue_referral_vouchers);
+                        }
+                    }
+
                     if (empty($transaction->commission_disabled)) {
                         $rebate_commission = GlobalController::rebate_commission($transaction->user_id, $transaction->transaction_no);
                         if ($rebate_commission != 'ok') {
@@ -7432,6 +7453,13 @@ class HomeController extends Controller
                         $upgrade_agent_with_package = GlobalController::upgrade_agent_with_package($transaction->transaction_no);
                         if ($upgrade_agent_with_package != 'ok') {
                         throw new \Exception($upgrade_agent_with_package);
+                        }
+                    }
+
+                    if (!empty($get_merchant_register->id) && !empty($transaction->register_product)) {
+                        $issue_referral_vouchers = GlobalController::issue_referral_vouchers($get_merchant_register->code, $get_merchant_register->master_id);
+                        if ($issue_referral_vouchers != 'ok') {
+                            throw new \Exception($issue_referral_vouchers);
                         }
                     }
 
@@ -8489,6 +8517,8 @@ class HomeController extends Controller
 
                     $Generate_Refferal_Reward = $this->Generate_Refferal_Reward($get_merchant->master_id);
                 }
+
+                GlobalController::issue_referral_vouchers($get_merchant->code, $get_merchant->master_id);
             }
 
             if(!empty($isMember->id)){

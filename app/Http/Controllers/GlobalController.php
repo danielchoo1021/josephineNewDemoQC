@@ -3000,6 +3000,77 @@ class GlobalController extends Controller
         }
     }
 
+    public static function issue_referral_vouchers($newUserCode, $referrerCode)
+    {
+        try{
+            \DB::beginTransaction();
+
+            $referrerExists = !empty($referrerCode) && (
+                Agent::where('code', $referrerCode)->where('status', '1')->exists() ||
+                User::where('code', $referrerCode)->where('status', '1')->exists()
+            );
+
+            if($referrerExists){
+                $now = now();
+
+                $referralVouchers = Promotion::where('is_referral_voucher', '1')
+                                              ->where('status', '1')
+                                              ->where(function($q) use ($now){
+                                                  $q->whereNull('start_date')->orWhere('start_date', '<=', $now);
+                                              })
+                                              ->where(function($q) use ($now){
+                                                  $q->whereNull('end_date')->orWhere('end_date', '>=', $now);
+                                              })
+                                              ->get();
+
+                foreach($referralVouchers as $voucher){
+                    // "Assigned" = every copy ever given out (any status), matching how
+                    // remaining stock is tracked on the Promotions list page.
+                    $assignedCount = AppliedPromotion::where('promotion_id', $voucher->id)->count();
+
+                    // need 2 remaining slots: one for the referrer, one for the new registrant
+                    if(($voucher->quantity - $assignedCount) < 2){
+                        continue;
+                    }
+
+                    $applied_promotions = new AppliedPromotion();
+                    $applied_promotions->promotion_id = $voucher->id;
+                    $applied_promotions->user_id = $referrerCode;
+                    $applied_promotions->status = 99;
+                    $applied_promotions->promotion_title = $voucher->promotion_title;
+                    $applied_promotions->image = $voucher->image;
+                    $applied_promotions->discount_code = $voucher->discount_code;
+                    $applied_promotions->amount_type = $voucher->amount_type;
+                    $applied_promotions->amount = $voucher->amount;
+                    $applied_promotions->remark = "Referral Reward: referred ".$newUserCode;
+                    $applied_promotions->save();
+
+                    $applied_promotions = new AppliedPromotion();
+                    $applied_promotions->promotion_id = $voucher->id;
+                    $applied_promotions->user_id = $newUserCode;
+                    $applied_promotions->status = 99;
+                    $applied_promotions->promotion_title = $voucher->promotion_title;
+                    $applied_promotions->image = $voucher->image;
+                    $applied_promotions->discount_code = $voucher->discount_code;
+                    $applied_promotions->amount_type = $voucher->amount_type;
+                    $applied_promotions->amount = $voucher->amount;
+                    $applied_promotions->remark = "Referral Reward: referred by ".$referrerCode;
+                    $applied_promotions->save();
+                }
+            }
+
+            \DB::commit();
+
+            return "ok";
+        }catch (\Exception $e){
+            \DB::rollback();
+            return $e->getMessage().' - '.$e->getLine();
+        }catch(\Error $e){
+            \DB::rollback();
+            return $e->getMessage().' - '.$e->getLine();
+        }
+    }
+
     public static function topup_bonus_pv($topup_no)
     {
         try{

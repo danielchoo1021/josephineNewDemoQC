@@ -139,6 +139,7 @@
 							@endif
 						</th>
 						<th>{{ isset($data['backendlang']['backendlang']['Available_Voucher']) ? $data['backendlang']['backendlang']['Available_Voucher'] :'' }}</th>
+						<th>{{ isset($data['backendlang']['backendlang']['Assigned_Voucher']) ? $data['backendlang']['backendlang']['Assigned_Voucher'] :'Assigned Voucher' }}</th>
 						<th>{{ isset($data['backendlang']['backendlang']['Redeemed_Voucher']) ? $data['backendlang']['backendlang']['Redeemed_Voucher'] :'' }}</th>
 						<th>{{ isset($data['backendlang']['backendlang']['Status']) ? $data['backendlang']['backendlang']['Status'] :'' }}</th>
 						<th>{{ isset($data['backendlang']['backendlang']['Action']) ? $data['backendlang']['backendlang']['Action'] :'' }}</th>
@@ -155,6 +156,7 @@
 						<td>{{ $promotion->start_date }}</td>
 						<td>{{ $promotion->end_date }}</td>
 						<td>{{ $available[$promotion->id] }}</td>
+						<td>{{ $assigned[$promotion->id] }}</td>
 						<td>{{ $redeemed[$promotion->id] }}</td>
 						<td>
 							{!! ($promotion->end_date < date('Y-m-d H:i:s')) 
