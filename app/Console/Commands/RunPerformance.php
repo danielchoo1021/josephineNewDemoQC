@@ -148,6 +148,26 @@ class RunPerformance extends Command
                 }
             }
         }
+
+        // Auto-inactive an agent's account if it's been more than 1 year since their
+        // last completed purchase (or since registration, if they never purchased).
+        if (date('H:i') == '01:00') {
+            $oneYearAgo = date('Y-m-d H:i:s', strtotime('-1 year'));
+
+            $active_agents = Agent::where('status', '1')->get();
+            foreach ($active_agents as $active_agent) {
+                $last_purchase = Transaction::where('user_id', $active_agent->code)
+                                             ->where('status', '1')
+                                             ->max('created_at');
+
+                $last_activity = !empty($last_purchase) ? $last_purchase : $active_agent->created_at;
+
+                if ($last_activity < $oneYearAgo) {
+                    $active_agent->status = '2';
+                    $active_agent->save();
+                }
+            }
+        }
         // GlobalController::auto_withdrawal();
 
         // foreach($merchants as $merchant){
