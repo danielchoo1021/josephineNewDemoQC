@@ -2521,7 +2521,7 @@ class ReportController extends Controller
         }
 
 
-        $commissions = AffiliateCommission::select(DB::raw('COALESCE(COALESCE(CONCAT(m.f_name, " ", m.l_name), CONCAT(a.f_name, " ", a.l_name), u.f_name)) AS agentName'), 'al.agent_lvl',
+        $commissions = AffiliateCommission::select(DB::raw('COALESCE(COALESCE(CONCAT(m.f_name, " ", m.l_name), CONCAT(a.f_name, " ", a.l_name), u.f_name)) AS agentName'), 'al.agent_lvl', 'al.level_colour',
           DB::raw('COALESCE(COALESCE(m.code, a.code), u.code) AS agentCode'),
           DB::raw('COALESCE(m.ic, a.ic) AS agentIC'), 
                                                   'affiliate_commissions.*', 't.id AS tID', 't.grand_total', 't.shipping_fee', 't.processing_fee', 't.discount',

@@ -196,6 +196,7 @@
 						<th>{{ isset($data['backendlang']['backendlang']['Transaction_Number']) ? $data['backendlang']['backendlang']['Transaction_Number'] :'' }}</th>
 						<th>{{ isset($data['backendlang']['backendlang']['Agent_Name']) ? $data['backendlang']['backendlang']['Agent_Name'] :'' }}</th>
 						<th>{{ isset($data['backendlang']['backendlang']['Agent_Code']) ? $data['backendlang']['backendlang']['Agent_Code'] :'' }}</th>
+						<th>{{ isset($data['backendlang']['backendlang']['Agent_Level']) ? $data['backendlang']['backendlang']['Agent_Level'] :'Agent Level' }}</th>
 						<th>{{ isset($data['backendlang']['backendlang']['Downline_Name']) ? $data['backendlang']['backendlang']['Downline_Code'] :'' }}</th>
 						<th>{{ isset($data['backendlang']['backendlang']['Downline_Code']) ? $data['backendlang']['backendlang']['Downline_Name'] :'' }}</th>
 						<th>{{ isset($data['backendlang']['backendlang']['Transaction_Amount']) ? $data['backendlang']['backendlang']['Transaction_Amount'] :'' }}</th>
@@ -232,6 +233,13 @@
 						</td>
 						<td>
 							{{ $commission->agentCode }}
+						</td>
+						<td>
+							@if(!empty($commission->agent_lvl))
+							<span class="badge" style="background-color: {{ !empty($commission->level_colour) ? $commission->level_colour : '#565F85' }}; color: #fff; font-size: 12px; padding: 5px 8px;">{{ $commission->agent_lvl }}</span>
+							@else
+							<i class="fa fa-minus"></i>
+							@endif
 						</td>
 						<td>
 							@if(!empty($commision->from_user) || !empty($commission->buyerName))
@@ -278,7 +286,7 @@
 					@endphp
 					@endforeach
 					<tr class="warning">
-						<td colspan="11">{{ isset($data['backendlang']['backendlang']['Summary']) ? $data['backendlang']['backendlang']['Summary'] :'' }}</td>
+						<td colspan="12">{{ isset($data['backendlang']['backendlang']['Summary']) ? $data['backendlang']['backendlang']['Summary'] :'' }}</td>
 						<td>{{ $totalCommission }}</td>
 					</tr>
 				</tbody>
