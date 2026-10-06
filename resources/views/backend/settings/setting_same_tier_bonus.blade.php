@@ -5,7 +5,7 @@
 		Paid on the 1st of every month for the previous month. An agent earns this percentage of the Order Rebate and Overriding Hierarchy commission received by each of their direct downlines who are on the same agent level.
 	</p>
 </div>
-<formmethod="POST" action="{{ route('save_setting_same_tier_bonus') }}" id="setting-same-tier-form">
+<form method="POST" action="{{ route('save_setting_same_tier_bonus') }}" id="setting-same-tier-form">
 @csrf
 	<div class="row">
 		@if(!$levels->isEmpty())
