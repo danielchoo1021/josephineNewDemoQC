@@ -9,6 +9,7 @@ use App\SettingMerchantBonus;
 use App\SettingMerchantRebate;
 use App\SettingMerchantCommission;
 use App\SettingOverrideHierarchyCommission;
+use App\SettingSameTierBonus;
 use App\SettingPerformanceDividend;
 use App\SettingPerformanceMain;
 use App\SettingTeamDividend;
@@ -379,6 +380,61 @@ class SettingController extends Controller
 
         Toastr::success($translation_data['backendlang']['backendlang']['Setting Overriding Hierarchy Bonus Successful'] ?? 'Setting Overriding Hierarchy Bonus Successful');
         return redirect()->route('setting_override_hierarchy_bonus');
+    }
+
+    public function setting_same_tier_bonus()
+    {
+        $setting_same_tier_bonuses = SettingSameTierBonus::get();
+
+        $levels = AgentLevel::where('status', '1');
+        if(Auth::guard('merchant')->check()){
+        $levels = $levels->where('merchant_id', Auth::user()->code);
+        }else{
+        $levels = $levels->whereNull('merchant_id');
+        }
+        $levels = $levels->get();
+
+        $value = [];
+        foreach($setting_same_tier_bonuses as $sstb){
+            $value[$sstb->agent_lvl] = array($sstb->comm_amount, $sstb->id);
+        }
+
+        return view('backend.settings.setting_same_tier_bonus', compact('levels',
+                                                                        'value'));
+    }
+
+    public function save_setting_same_tier_bonus(Request $request)
+    {
+        $translation_data = GlobalController::get_translations();
+        try{
+            \DB::beginTransaction();
+
+            for($a=0; $a<count($request->comm_amount); $a++){
+
+                if(!empty($request->ids[$a])){
+                    $same_tier_bonus = SettingSameTierBonus::find($request->ids[$a]);
+                }else{
+                    $same_tier_bonus = new SettingSameTierBonus();
+                }
+
+                $same_tier_bonus->agent_lvl = $request->agent_lvl[$a];
+                $same_tier_bonus->comm_amount = !empty($request->comm_amount[$a]) ? $request->comm_amount[$a] : 0;
+                $same_tier_bonus->save();
+            }
+
+            \DB::commit();
+        }catch (\Exception $e){
+            \DB::rollback();
+            Toastr::error($e->getMessage());
+            return Redirect::back()->withInput($request->all())->withErrors($e->getMessage());
+        }catch(\Error $e){
+            \DB::rollback();
+            Toastr::error($e->getMessage());
+            return Redirect::back()->withInput($request->all())->withErrors($e->getMessage());
+        }
+
+        Toastr::success($translation_data['backendlang']['backendlang']['Setting Same Tier Bonus Successful'] ?? 'Setting Same Tier Bonus Successful');
+        return redirect()->route('setting_same_tier_bonus');
     }
 
     public function setting_commission()
@@ -1300,6 +1356,7 @@ class SettingController extends Controller
             if($website_setting->override_hierarchy_enable == 1){
                 $website_setting->hierarchy_enable = 0;
             }
+            $website_setting->same_tier_bonus_enable = isset($request->same_tier_bonus_enable) ? 1 : 0;
             $website_setting->referral_enable = isset($request->referral_enable) ? 1 : 0;
 
             $website_setting->member_rebate_enable = isset($request->member_rebate_enable) ? 1 : 0;

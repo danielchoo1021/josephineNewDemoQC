@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
+use App\Agent;
 
 class LoginController extends Controller
 {
@@ -102,6 +105,29 @@ class LoginController extends Controller
             $request->only($this->username(), 'password'),
             ['status' => '1']
         );
+    }
+
+    /**
+     * An agent whose registration is still waiting for admin verification
+     * (status 99) cannot log in yet. When the credentials are otherwise
+     * correct, say so instead of the generic "Email / Password Invalid".
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function sendFailedLoginResponse(Request $request)
+    {
+        $agent = Agent::where('email', strtolower($request->input($this->username())))->first();
+
+        if (!empty($agent->id) && (string) $agent->status === '99' && Hash::check($request->input('password'), $agent->password)) {
+            throw ValidationException::withMessages([
+                'pending' => [__('Your account is still pending verification. You will be able to log in once it has been approved.')],
+            ]);
+        }
+
+        return parent::sendFailedLoginResponse($request);
     }
 
     /**

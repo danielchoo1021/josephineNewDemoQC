@@ -115,6 +115,20 @@ class AgentController extends Controller
             $per_page = request('per_page');
         }
 
+        // Newest code first unless the user picked a sort column. This has to be
+        // applied before the loop below, because per_page paginates (runs the query).
+        $has_sort = false;
+        foreach($columns as $column){
+            if(preg_match('/_(asc|desc)$/', $column) && !empty(request($column))){
+                $has_sort = true;
+                break;
+            }
+        }
+
+        if(!$has_sort){
+            $agents = $agents->orderBy('agents.code', 'desc');
+        }
+
         foreach($columns as $column){
             if(request()->has($column) && !empty(request($column))){
                 if($column == 'agent_name'){
@@ -198,10 +212,6 @@ class AgentController extends Controller
                 $queries[$column] = request($column);
 
             }
-        }
-
-        if(empty($_GET)) {
-            $agents = $agents->orderBy('agents.code', 'desc');
         }
 
         // $agents = $agents->orderBy('agents.display_running_no', 'desc');

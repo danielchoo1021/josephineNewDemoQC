@@ -618,6 +618,8 @@
                                {{ (Request::segment(1) == 'setting_agent_level' ||
                                    Request::segment(1) == 'setting_agent_rebate' ||
                                    Request::segment(1) == 'setting_merchant_commission' ||
+                                   Request::segment(1) == 'setting_override_hierarchy_bonus' ||
+                                   Request::segment(1) == 'setting_same_tier_bonus' ||
                                    Request::segment(1) == 'setting_recommend_bonus' ||
                                    Request::segment(1) == 'setting_performance_dividend' ||
                                    Request::segment(1) == 'setting_team_dividend' ||
@@ -658,6 +660,14 @@
                             <li class="submenu-item {{ (Request::segment(1) == 'setting_override_hierarchy_bonus') ? 'active' : '' }}">
                                 <a href="{{ route('setting_override_hierarchy_bonus') }}" class="submenu-link">
                                     {{ isset($data['backendlang']['backendlang']['Overriding_Hierarchy_Bonus']) ? $data['backendlang']['backendlang']['Overriding_Hierarchy_Bonus'] : ''  }}
+                                </a>
+                            </li>
+                            @endif
+
+                            @if(!empty($data['permission']['permission'][Auth::guard($data['userGuardRole'])->user()->permission_lvl]['same-tier-bonus-list']) && !empty($data['web_setting']->same_tier_bonus_enable))
+                            <li class="submenu-item {{ (Request::segment(1) == 'setting_same_tier_bonus') ? 'active' : '' }}">
+                                <a href="{{ route('setting_same_tier_bonus') }}" class="submenu-link">
+                                    {{ isset($data['backendlang']['backendlang']['Same_Tier_Bonus']) ? $data['backendlang']['backendlang']['Same_Tier_Bonus'] : 'Same Tier Bonus'  }}
                                 </a>
                             </li>
                             @endif

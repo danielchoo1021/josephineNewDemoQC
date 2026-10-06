@@ -35,6 +35,15 @@ class EnsureAccountIsActive
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
 
+                // A member who bought an upgrade package is moved to a new Agent
+                // account; tell them that instead of calling the account inactive.
+                if ($guard === 'web' && (string) ($user->upgraded ?? '') === '1') {
+                    return redirect()->route($this->resolveRedirectRoute($guard))
+                        ->withErrors([
+                            'upgraded' => __('Your account has been upgraded to Agent level. Please log in again to access your Agent account.'),
+                        ]);
+                }
+
                 return redirect()->route($this->resolveRedirectRoute($guard))
                     ->withErrors([
                         'inactive' => __('Your account is inactive. Please contact support for assistance.'),

@@ -997,7 +997,7 @@
                         99 => 'Prize_Pool',
                         3 => 'Performance_Reward',
                         4 => 'Team_Reward',
-                        5 => 'Team_Reward'
+                        5 => 'Same_Tier_Bonus'
                     ];
                 @endphp
                  @foreach ($commissionType as $type => $label)
@@ -1514,7 +1514,7 @@
                     {
                         name: '{{ $translatedLabel }}',
                         y: {{ $percentage }},
-                        color: '{{ ["#FFA500", "#87CEEB", "#008B8B", "#466C8B", "#191970", "#FF6B6B"][$loop->index] }}'
+                        color: '{{ ["#FFA500", "#87CEEB", "#008B8B", "#466C8B", "#191970", "#FF6B6B", "#8A2BE2"][$loop->index] }}'
                     },
                     @endif
                 @endforeach
@@ -1584,7 +1584,7 @@
                     {
                         name: '{{ $translatedLabel }}',
                         y: {{ $percentage }},
-                        color: '{{ ["#FFA500", "#87CEEB", "#008B8B", "#466C8B", "#191970", "#FF6B6B"][$loop->index] }}'
+                        color: '{{ ["#FFA500", "#87CEEB", "#008B8B", "#466C8B", "#191970", "#FF6B6B", "#8A2BE2"][$loop->index] }}'
                     },
                     @endif
                 @endforeach

@@ -132,6 +132,12 @@ class RunPerformance extends Command
             }
         }
         
+        // Same Tier Bonus: 1st of the month, for the month just ended. Safe to hit every
+        // minute because each agent/downline/month is only ever paid once.
+        if(date('d') == '01'){
+            GlobalController::same_tier_bonus();
+        }
+
         $website_setting = WebsiteSetting::first();
 
         if($website_setting->auto_withdrawal_enable == 1){

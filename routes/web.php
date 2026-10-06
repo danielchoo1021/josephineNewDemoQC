@@ -471,6 +471,9 @@ Route::group(['middleware' => 'auth:admin,merchant,staff'], function () {
 	Route::get('setting_override_hierarchy_bonus', 'Backend\SettingController@setting_override_hierarchy_bonus')->name('setting_override_hierarchy_bonus');
 	Route::post('save_setting_override_hierarchy_bonus', 'Backend\SettingController@save_setting_override_hierarchy_bonus')->name('save_setting_override_hierarchy_bonus');
 
+	Route::get('setting_same_tier_bonus', 'Backend\SettingController@setting_same_tier_bonus')->name('setting_same_tier_bonus');
+	Route::post('save_setting_same_tier_bonus', 'Backend\SettingController@save_setting_same_tier_bonus')->name('save_setting_same_tier_bonus');
+
 	Route::get('setting_commission', 'Backend\SettingController@setting_commission')->name('setting_commission');
 	Route::post('save_setting_commission', 'Backend\SettingController@save_setting_commission')->name('save_setting_commission');
 
@@ -553,6 +556,7 @@ Route::group(['middleware' => 'auth:admin,merchant,staff'], function () {
 	Route::get('print_point_order_report', 'Backend\ReportController@print_point_order_report')->name('print_point_order_report');
 	Route::get('commission_report', 'Backend\ReportController@commission_report')->name('commission_report');
 	Route::get('print_commission_report', 'Backend\ReportController@print_commission_report')->name('print_commission_report');
+	Route::get('same_tier_bonus_breakdown/{id}', 'Backend\ReportController@same_tier_bonus_breakdown')->name('same_tier_bonus_breakdown');
 	Route::get('team_reward_report', 'Backend\ReportController@team_reward_report')->name('team_reward_report');
 	Route::get('team_reward_report_detail/{code}', 'Backend\ReportController@team_reward_report_detail')->name('team_reward_report_detail');
 	Route::get('topup_wallet_report', 'Backend\ReportController@topup_wallet_report')->name('topup_wallet_report');

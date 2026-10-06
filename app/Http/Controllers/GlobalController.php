@@ -35,6 +35,7 @@ use App\SettingRefferalReward;
 use App\SettingMerchantRebate;
 use App\SettingMerchantCommission;
 use App\SettingOverrideHierarchyCommission;
+use App\SettingSameTierBonus;
 use App\TopupTransaction;
 use App\AdjustTopupWallet;
 
@@ -2486,9 +2487,18 @@ class GlobalController extends Controller
 
             $base_amount = $transaction->grand_total - $transaction->shipping_fee;
 
+            // A member who bought an upgrade package has already been moved to a new
+            // agent account by the time this runs, so their affiliate rows now sit
+            // under the new code. Walk the upline from there, but keep $code as the
+            // buyer so they are still treated as a member (no agent-level baseline).
+            $affiliate_code = $code;
+            if(!Affiliate::where('affiliate_id', $code)->exists() && !empty($transaction->user_id)){
+                $affiliate_code = $transaction->user_id;
+            }
+
             $affs = Affiliate::select('affiliates.*', 'm.lvl')
                              ->join('agents as m', 'm.code', 'affiliates.user_id')
-                             ->where('affiliates.affiliate_id', $code)
+                             ->where('affiliates.affiliate_id', $affiliate_code)
                              ->where('m.status', '1')
                              ->orderBy('sort_level', 'asc')
                              ->get();
@@ -2522,6 +2532,13 @@ class GlobalController extends Controller
                 $rate = !empty($setting_override_hierarchy_commission->comm_amount) ? $setting_override_hierarchy_commission->comm_amount : 0;
                 $increment_rate = $rate - $cumulative_rate;
 
+                // On a new agent's first (registration) order, the direct referrer is paid
+                // their full level rate instead of the difference against the buyer's tier.
+                // Everyone further up the line, and every later order, uses the difference.
+                if($transaction->register_product == 1 && $aff->sort_level == 1){
+                    $increment_rate = $rate;
+                }
+
                 if($increment_rate <= 0){
                     continue;
                 }
@@ -2539,7 +2556,7 @@ class GlobalController extends Controller
                     }
 
                     $insert->user_id = $aff->user_id;
-                    $insert->user_by = $code;
+                    $insert->user_by = $affiliate_code;
                     $insert->transaction_no = $no;
                     $insert->product_amount = $base_amount;
                     $insert->comm_pa_type = 'Percentage';
@@ -2557,6 +2574,120 @@ class GlobalController extends Controller
                 }
 
                 $cumulative_rate = $rate;
+            }
+
+            \DB::commit();
+        }catch (\Exception $e){
+            \DB::rollback();
+            return $e->getMessage().' - '.$e->getLine();
+        }catch(\Error $e){
+            \DB::rollback();
+            return $e->getMessage().' - '.$e->getLine();
+        }
+
+        return "ok";
+    }
+
+    /**
+     * Monthly Same Tier Bonus.
+     *
+     * For every active agent, takes each direct downline that is on the SAME agent
+     * level right now and pays the agent the level's percentage of what that
+     * downline received last month in Order Rebate (type 2) and Overriding
+     * Hierarchy (type 1) commissions. One approved commission row per
+     * agent/downline pair (type 5), so re-running the same month is a no-op.
+     *
+     * @param  string|null  $period  Month to calculate, as Y-m. Defaults to last month.
+     * @return string  "ok" or the error message
+     */
+    public static function same_tier_bonus($period = null)
+    {
+        try{
+            \DB::beginTransaction();
+
+            $website_setting = GlobalController::website_setting();
+
+            if(empty($website_setting->same_tier_bonus_enable)){
+                \DB::commit();
+                return "ok";
+            }
+
+            if(empty($period)){
+                $period = date('Y-m', strtotime('first day of last month'));
+            }
+
+            $start = $period.'-01 00:00:00';
+            $end = date('Y-m-t 23:59:59', strtotime($start));
+            $desc = "Same Tier Bonus (".$period.")";
+
+            $rates = SettingSameTierBonus::where('status', '1')
+                                         ->where('comm_amount', '>', 0)
+                                         ->pluck('comm_amount', 'agent_lvl');
+
+            if($rates->isEmpty()){
+                \DB::commit();
+                return "ok";
+            }
+
+            // What every agent received last month from the commissions that count.
+            $earned = AffiliateCommission::select('user_id', DB::raw('SUM(comm_amount) as total'))
+                                         ->whereIn('type', ['1', '2'])
+                                         ->where('status', '1')
+                                         ->whereBetween('created_at', [$start, $end])
+                                         ->groupBy('user_id')
+                                         ->pluck('total', 'user_id');
+
+            if($earned->isEmpty()){
+                \DB::commit();
+                return "ok";
+            }
+
+            $uplines = Agent::where('status', '1')
+                            ->whereIn('lvl', $rates->keys())
+                            ->get();
+
+            foreach($uplines as $upline){
+                $rate = $rates[$upline->lvl];
+
+                $downlines = Agent::where('master_id', $upline->code)
+                                  ->where('status', '1')
+                                  ->where('lvl', $upline->lvl)
+                                  ->get();
+
+                foreach($downlines as $downline){
+                    $downline_earned = !empty($earned[$downline->code]) ? $earned[$downline->code] : 0;
+                    if($downline_earned <= 0){
+                        continue;
+                    }
+
+                    $already_paid = AffiliateCommission::where('type', '5')
+                                                       ->where('user_id', $upline->code)
+                                                       ->where('user_by', $downline->code)
+                                                       ->where('comm_desc', $desc)
+                                                       ->exists();
+                    if($already_paid){
+                        continue;
+                    }
+
+                    $comm_amount = $downline_earned * $rate / 100;
+                    if($comm_amount <= 0){
+                        continue;
+                    }
+
+                    $insert = new AffiliateCommission();
+                    $insert->type = '5';
+                    $insert->user_id = $upline->code;
+                    $insert->user_by = $downline->code;
+                    $insert->product_image = '';
+                    $insert->product_amount = $downline_earned;
+                    $insert->comm_pa_type = 'Percentage';
+                    $insert->comm_pa = $rate;
+                    $insert->comm_amount = $comm_amount;
+                    $insert->comm_desc = $desc;
+                    $insert->comm_desc_cn = "同级奖金 (".$period.")";
+                    $insert->status = 1;
+                    $insert->save();
+                }
             }
 
             \DB::commit();
@@ -3000,74 +3131,74 @@ class GlobalController extends Controller
         }
     }
 
-    public static function issue_referral_vouchers($newUserCode, $referrerCode)
+    // Referral vouchers are member-only and are triggered by the new member's first paid
+    // transaction. Called from transaction_voucher_assign(), which every payment path runs.
+    // Throws on failure; the caller's try/catch handles the rollback.
+    private static function issue_referral_vouchers(Transaction $transaction)
     {
-        try{
-            \DB::beginTransaction();
+        $newMember = User::where('code', $transaction->user_id)->first();
+        if(empty($newMember->id) || empty($newMember->master_id)){
+            return;
+        }
+        $newUserCode = $newMember->code;
+        $referrerCode = $newMember->master_id;
 
-            $referrerExists = !empty($referrerCode) && (
-                Agent::where('code', $referrerCode)->where('status', '1')->exists() ||
-                User::where('code', $referrerCode)->where('status', '1')->exists()
-            );
+        $hasPriorPurchase = Transaction::where('user_id', $newUserCode)
+                                       ->where('status', '1')
+                                       ->where('id', '!=', $transaction->id)
+                                       ->exists();
+        if($hasPriorPurchase){
+            return;
+        }
 
-            if($referrerExists){
-                $now = now();
+        $referrerIsMember = User::where('code', $referrerCode)->where('status', '1')->exists();
+        $referrerIsAgent = Agent::where('code', $referrerCode)->where('status', '1')->exists();
 
-                $referralVouchers = Promotion::where('is_referral_voucher', '1')
-                                              ->where('status', '1')
-                                              ->where(function($q) use ($now){
-                                                  $q->whereNull('start_date')->orWhere('start_date', '<=', $now);
-                                              })
-                                              ->where(function($q) use ($now){
-                                                  $q->whereNull('end_date')->orWhere('end_date', '>=', $now);
-                                              })
-                                              ->get();
+        if(!$referrerIsMember && !$referrerIsAgent){
+            return;
+        }
 
-                foreach($referralVouchers as $voucher){
-                    // "Assigned" = every copy ever given out (any status), matching how
-                    // remaining stock is tracked on the Promotions list page.
-                    $assignedCount = AppliedPromotion::where('promotion_id', $voucher->id)->count();
+        // an agent referrer gets nothing; only the new member is rewarded
+        $slotsNeeded = $referrerIsMember ? 2 : 1;
+        $now = now();
 
-                    // need 2 remaining slots: one for the referrer, one for the new registrant
-                    if(($voucher->quantity - $assignedCount) < 2){
-                        continue;
-                    }
+        $referralVouchers = Promotion::where('is_referral_voucher', '1')
+                                      ->where('status', '1')
+                                      ->where(function($q) use ($now){
+                                          $q->whereNull('start_date')->orWhere('start_date', '<=', $now);
+                                      })
+                                      ->where(function($q) use ($now){
+                                          $q->whereNull('end_date')->orWhere('end_date', '>=', $now);
+                                      })
+                                      ->get();
 
-                    $applied_promotions = new AppliedPromotion();
-                    $applied_promotions->promotion_id = $voucher->id;
-                    $applied_promotions->user_id = $referrerCode;
-                    $applied_promotions->status = 99;
-                    $applied_promotions->promotion_title = $voucher->promotion_title;
-                    $applied_promotions->image = $voucher->image;
-                    $applied_promotions->discount_code = $voucher->discount_code;
-                    $applied_promotions->amount_type = $voucher->amount_type;
-                    $applied_promotions->amount = $voucher->amount;
-                    $applied_promotions->remark = "Referral Reward: referred ".$newUserCode;
-                    $applied_promotions->save();
+        $grant = function($voucher, $userCode, $remark){
+            $applied_promotions = new AppliedPromotion();
+            $applied_promotions->promotion_id = $voucher->id;
+            $applied_promotions->user_id = $userCode;
+            $applied_promotions->status = 99;
+            $applied_promotions->promotion_title = $voucher->promotion_title;
+            $applied_promotions->image = $voucher->image;
+            $applied_promotions->discount_code = $voucher->discount_code;
+            $applied_promotions->amount_type = $voucher->amount_type;
+            $applied_promotions->amount = $voucher->amount;
+            $applied_promotions->remark = $remark;
+            $applied_promotions->save();
+        };
 
-                    $applied_promotions = new AppliedPromotion();
-                    $applied_promotions->promotion_id = $voucher->id;
-                    $applied_promotions->user_id = $newUserCode;
-                    $applied_promotions->status = 99;
-                    $applied_promotions->promotion_title = $voucher->promotion_title;
-                    $applied_promotions->image = $voucher->image;
-                    $applied_promotions->discount_code = $voucher->discount_code;
-                    $applied_promotions->amount_type = $voucher->amount_type;
-                    $applied_promotions->amount = $voucher->amount;
-                    $applied_promotions->remark = "Referral Reward: referred by ".$referrerCode;
-                    $applied_promotions->save();
-                }
+        foreach($referralVouchers as $voucher){
+            // "Assigned" = every copy ever given out (any status), matching how
+            // remaining stock is tracked on the Promotions list page.
+            $assignedCount = AppliedPromotion::where('promotion_id', $voucher->id)->count();
+
+            if(($voucher->quantity - $assignedCount) < $slotsNeeded){
+                continue;
             }
 
-            \DB::commit();
-
-            return "ok";
-        }catch (\Exception $e){
-            \DB::rollback();
-            return $e->getMessage().' - '.$e->getLine();
-        }catch(\Error $e){
-            \DB::rollback();
-            return $e->getMessage().' - '.$e->getLine();
+            if($referrerIsMember){
+                $grant($voucher, $referrerCode, "Referral Reward: referred ".$newUserCode);
+            }
+            $grant($voucher, $newUserCode, "Referral Reward: referred by ".$referrerCode);
         }
     }
 
@@ -3129,6 +3260,9 @@ class GlobalController extends Controller
                     }
                 }
             }
+
+            self::issue_referral_vouchers($transaction);
+
             \DB::commit();
 
             return "ok";
@@ -3205,6 +3339,10 @@ class GlobalController extends Controller
                         $transactions = Transaction::where('user_id', $user->code)->update(['user_id'=>$new_agent->code]);
 
                         $applied_promotions = AppliedPromotion::where('user_id', $user->code)->update(['user_id'=>$new_agent->code]);
+
+                        // Downlines referred by the old member code now belong to the new agent code.
+                        User::where('master_id', $user->code)->update(['master_id'=>$new_agent->code]);
+                        Agent::where('master_id', $user->code)->update(['master_id'=>$new_agent->code]);
 
                         $cart = Cart::where('user_id', $user->code)->update(['user_id'=>$new_agent->code]);
 

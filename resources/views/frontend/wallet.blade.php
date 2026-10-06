@@ -169,6 +169,7 @@
 										</div>
 									</form>
 
+									{{-- Transfer Cash Wallet To Topup Wallet hidden for now
 									<form method="POST" action="{{ route('transfer_cash_to_topup') }}" id="transfer-form" enctype="multipart/form-data">
 										@csrf
 										<div class="container-box">
@@ -200,6 +201,7 @@
 											</button>
 										</div>
 									</form>
+									--}}
 								</div>
 								<div class="col-md-6">
 									<form method="POST" action="{{ route('submit_topup') }}" id="topup-form" enctype="multipart/form-data">

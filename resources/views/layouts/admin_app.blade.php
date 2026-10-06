@@ -1652,6 +1652,22 @@ body{
                         </nav>
                     </div>
                 </div>
+            @elseif(Request::segment(1) == 'setting_same_tier_bonus')
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">{{ isset($data['backendlang']['backendlang']['Same_Tier_Bonus']) ? $data['backendlang']['backendlang']['Same_Tier_Bonus'] :'Same Tier Bonus' }}</h4>
+                    </div>
+                    <div class="card-body">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="#"> {{ isset($data['backendlang']['backendlang']['Home']) ? $data['backendlang']['backendlang']['Home'] :'' }}</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">
+                                    {{ isset($data['backendlang']['backendlang']['Same_Tier_Bonus']) ? $data['backendlang']['backendlang']['Same_Tier_Bonus'] :'Same Tier Bonus' }}
+                                </li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
             @elseif(Request::segment(1) == 'setting_recommend_bonus')
                 <div class="card">
                     <div class="card-header">

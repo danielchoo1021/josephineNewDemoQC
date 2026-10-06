@@ -110,12 +110,14 @@ class RegisterController extends Controller
 
         event(new Registered($user));
 
-        $pendingApproval = $assistedRegistration && (string) $user->status === '99';
+        // Agent accounts start at status 99 until an admin verifies the registration
+        // payment, so anyone (assisted or self-registered) must be told it is pending.
+        $pendingApproval = (string) $user->status === '99';
 
         Session::flash('registration_success', [
             'login_id' => $user->email,
             'code' => $user->display_code . $user->display_running_no,
-            'login_route' => $assistedRegistration ? null : route('login'),
+            'login_route' => ($assistedRegistration || $pendingApproval) ? null : route('login'),
             'pending_approval' => $pendingApproval,
         ]);
 
@@ -201,7 +203,7 @@ class RegisterController extends Controller
         $merchant = Merchant::where(DB::raw('CONCAT(display_code, display_running_no)'), 'like', '%'.$data['master_id'].'%')->where('status', '1')->first();
         $admin = Admin::where(DB::raw('CONCAT(display_code, display_running_no)'), 'like', '%'.$data['master_id'].'%')->where('status', '1')->first();
         $agent = Agent::where(DB::raw('CONCAT(display_code, display_running_no)'), 'like', '%'.$data['master_id'].'%')->where('status', '1')->first();
-        $user = User::where(DB::raw('CONCAT(display_code, display_running_no)'), 'like', '%'.$data['master_id'].'%')->where('status', '1')->where('lvl', '1')->first();
+        $user = User::where(DB::raw('CONCAT(display_code, display_running_no)'), 'like', '%'.$data['master_id'].'%')->where('status', '1')->first();
 
         if(!empty($merchant->id)){
             $uplineDetail = $merchant;
@@ -226,7 +228,7 @@ class RegisterController extends Controller
         if($data['role'] == '1'){
             $dc = GlobalController::MemberDisplayCode();
 
-            return User::create([
+            $newMember = User::create([
                 'master_id' => $uplineDetail->code,
                 'code' => $this->MemberCode(),
                 'country_code' => $data['country_code'],
@@ -242,6 +244,15 @@ class RegisterController extends Controller
                 'display_running_no'=> $dc[1],
                 'status'=> '1'
             ]);
+
+            // Members need affiliate rows too, otherwise their upline never shows
+            // on the profile header and upline lookups come back empty.
+            $add_affiliates = GlobalController::add_affiliates($newMember->code, $newMember->master_id);
+            if($add_affiliates != 'ok'){
+                throw new \Exception($add_affiliates);
+            }
+
+            return $newMember;
         }else{
             $dc = GlobalController::AgentDisplayCode();
 

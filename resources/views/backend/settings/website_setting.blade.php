@@ -207,6 +207,20 @@ input:checked + .slider:before {
 					<div class="form-group container-box">
 						<div class="row">
 							<div class="col-6">
+								<li style="font-size: 20px; color: #000;">{{ isset($data['backendlang']['backendlang']['Same_Tier_Bonus']) ? $data['backendlang']['backendlang']['Same_Tier_Bonus'] :'Same Tier Bonus' }}</li>
+							</div>
+							<div class="col-6" align="right">
+								<label class="switch">
+								  	<input type="checkbox" name="same_tier_bonus_enable" {{ (!empty($setting->id) && $setting->same_tier_bonus_enable == 1) ? 'checked' : '' }}>
+								  	<span class="slider round"></span>
+								</label>
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group container-box">
+						<div class="row">
+							<div class="col-6">
 								<li style="font-size: 20px; color: #000;">{{ isset($data['backendlang']['backendlang']['Referral_Reward']) ? $data['backendlang']['backendlang']['Referral_Reward'] :'' }}</li>
 							</div>
 							<div class="col-6" align="right">

@@ -2749,6 +2749,42 @@ class ReportController extends Controller
                                                           'dailySales'=>$dailySales]);
     }
 
+    /**
+     * "Where did this come from" popup for a Same Tier Bonus commission row:
+     * lists the downline's commissions for the month and shows the calculation.
+     */
+    public function same_tier_bonus_breakdown($id)
+    {
+        $bonus = AffiliateCommission::where('id', $id)->where('type', '5')->firstOrFail();
+
+        $period = null;
+        if(preg_match('/\((\d{4}-\d{2})\)/', $bonus->comm_desc, $m)){
+            $period = $m[1];
+        }
+
+        $upline = Agent::where('code', $bonus->user_id)->first();
+        $downline = Agent::where('code', $bonus->user_by)->first();
+
+        $levels = \App\AgentLevel::pluck('agent_lvl', 'id');
+        $uplineLevel = !empty($upline->lvl) ? ($levels[$upline->lvl] ?? null) : null;
+        $downlineLevel = !empty($downline->lvl) ? ($levels[$downline->lvl] ?? null) : null;
+
+        $items = collect();
+        if(!empty($period)){
+            $start = $period.'-01 00:00:00';
+            $end = date('Y-m-t 23:59:59', strtotime($start));
+
+            $items = AffiliateCommission::where('user_id', $bonus->user_by)
+                                        ->whereIn('type', ['1', '2'])
+                                        ->where('status', '1')
+                                        ->whereBetween('created_at', [$start, $end])
+                                        ->orderBy('created_at', 'asc')
+                                        ->get();
+        }
+
+        return view('backend.reports.same_tier_bonus_breakdown', compact('bonus', 'period', 'upline', 'downline', 'uplineLevel', 'downlineLevel', 'items'));
+    }
+
     public function print_commission_report()
     {
 

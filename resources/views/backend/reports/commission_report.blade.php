@@ -257,7 +257,13 @@
 							{{ number_format($commission->comm_pa, 2) }}%
 							@endif
 						</td>
-						<td>{{ $commission->comm_amount }}</td>
+						<td>
+							@if($commission->type == 5)
+							<a href="#" class="same-tier-breakdown-link" data-id="{{ $commission->id }}" style="text-decoration: underline;" title="Click to see how this is calculated">{{ $commission->comm_amount }}</a>
+							@else
+							{{ $commission->comm_amount }}
+							@endif
+						</td>
 						<td>
 							@php
 								$statusText = ($commission->status == 2) ? (isset($data['backendlang']['backendlang']['Burned']) ? $data['backendlang']['backendlang']['Burned'] : 'Burned') : (isset($data['backendlang']['backendlang']['Approved']) ? $data['backendlang']['backendlang']['Approved'] : 'Approved');
@@ -282,9 +288,36 @@
 	</div>
 </div>
 
+<div class="modal fade" id="same-tier-breakdown-modal" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Same Tier Bonus Calculation</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			</div>
+			<div class="modal-body" id="same-tier-breakdown-body"></div>
+		</div>
+	</div>
+</div>
+
 @endsection
 @section('js')
 <script type="text/javascript">
+	$('.same-tier-breakdown-link').on('click', function(e){
+		e.preventDefault();
+
+		var url = "{{ route('same_tier_bonus_breakdown', ':id') }}".replace(':id', $(this).data('id'));
+
+		$('#same-tier-breakdown-body').html('<p align="center">Loading...</p>');
+		$('#same-tier-breakdown-modal').modal('show');
+
+		$.get(url, function(html){
+			$('#same-tier-breakdown-body').html(html);
+		}).fail(function(){
+			$('#same-tier-breakdown-body').html('<p class="text-danger" align="center">Unable to load the calculation.</p>');
+		});
+	});
+
 	$('input[name=dates]').daterangepicker({
 		'applyClass': 'btn-sm btn-success',
 		'cancelClass': 'btn-sm btn-outline-danger',

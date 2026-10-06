@@ -3970,7 +3970,7 @@ li:hover .dropdown-menu {
                     <i class="fa fa-check-circle" aria-hidden="true" style="font-size: 56px; color: #28a745; margin-bottom: 12px;"></i>
                     <h4 id="registrationSuccessLabel">
                         @if(session('registration_success')['pending_approval'] ?? false)
-                            {{ isset($data['lang']['lang']['registration_submitted']) ? $data['lang']['lang']['registration_submitted'] :'Account Creation Submitted'}}
+                            {{ isset($data['lang']['lang']['registration_submitted']) ? $data['lang']['lang']['registration_submitted'] :'Registration Submitted'}}
                         @else
                             {{ isset($data['lang']['lang']['registration_successful']) ? $data['lang']['lang']['registration_successful'] :'Registration Successful'}}
                         @endif
@@ -3978,7 +3978,7 @@ li:hover .dropdown-menu {
                 </div>
                 <div class="modal-body">
                     @if(session('registration_success')['pending_approval'] ?? false)
-                        <p>{{ isset($data['lang']['lang']['registration_pending_approval_message']) ? $data['lang']['lang']['registration_pending_approval_message'] :'The account below has been created and is pending admin approval before it can log in.'}}</p>
+                        <p>{{ isset($data['lang']['lang']['registration_pending_approval_message']) ? $data['lang']['lang']['registration_pending_approval_message'] :'Your registration has been submitted and is pending verification. You will be able to log in once it has been approved. Please keep the details below.'}}</p>
                     @else
                         <p>{{ isset($data['lang']['lang']['registration_success_message']) ? $data['lang']['lang']['registration_success_message'] :'Your account has been created successfully. Please keep the login details below.'}}</p>
                     @endif

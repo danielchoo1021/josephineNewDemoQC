@@ -350,7 +350,7 @@ class DashboardController extends Controller
 
 
         $totalCommission = AffiliateCommission::select(DB::raw('SUM(comm_amount) AS totalCommission'))
-                                              ->whereIn('type', ['1', '99', '6', '3', '10', '4'])
+                                              ->whereIn('type', ['1', '99', '6', '3', '10', '4', '5'])
                                               ->where('status', '1');
                                               
         if(Auth::guard('merchant')->check()){
@@ -392,6 +392,7 @@ class DashboardController extends Controller
             99 => 'Prize Pool',
             3 => 'Performance Reward',
             4 => 'Team Reward',
+            5 => 'Same Tier Bonus',
         ];
 
         $commissionSummary = AffiliateCommission::select('type', DB::raw('SUM(comm_amount) as total_amount'))

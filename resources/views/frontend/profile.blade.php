@@ -225,7 +225,7 @@
 			</div>
 			<br>
 			<div class="row">
-				<div class="col-4" align="center"> 
+				<div class="col-6" align="center"> 
 					<span class="wallet-balance-amount TotalPV">
 						RM 0.00 
 					</span>
@@ -234,7 +234,7 @@
 						Total Accumulated Sales
 					</span>
 				</div>
-				<div class="col-4" align="center"> 
+				<div class="col-6" align="center"> 
 					<span class="wallet-balance-amount monthlyPV">
 						RM 0.00
 					</span>
@@ -243,7 +243,7 @@
 						This Month Sales
 					</span>
 				</div>
-				<div class="col-4 TeamBonus" align="center"> 
+				<div class="col-4 TeamBonus" align="center" style="display: none;"> <!-- Team Bonus Tier hidden: not in use yet --> 
 					<span class="wallet-balance-amount">
 						0%
 					</span>
@@ -407,7 +407,7 @@
 			</li> -->
 		</div>
 		<div class="form-group">
-			<a class="btn btn-block profile-word set_button set_text" onclick="event.preventDefault(); $('.loading-gif').show(); document.getElementById('logout-form').submit();">
+			<a class="btn btn-block profile-word set_button set_text" style="border: 1px solid currentColor;" onclick="event.preventDefault(); $('.loading-gif').show(); document.getElementById('logout-form').submit();">
 				<i class="fa fa-sign-out" aria-hidden="true"></i> 
 				{{ isset($data['lang']['lang']['logout']) ? $data['lang']['lang']['logout'] :'登出'}}
 			</a>

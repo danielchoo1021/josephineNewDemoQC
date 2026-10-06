@@ -41,7 +41,6 @@
 			</div>
 			<div class="form-group">
 				<div class="row justify-content-center">
-					<!-- Customer Register disabled per request
 					<div class="col-md-6" align="center">
 						<br>
 						<b>
@@ -72,7 +71,6 @@
 							</div>
 						</div>
 					</div>
-					-->
 					@if(Auth::guard('agent')->check() || Auth::guard('admin')->check())
 					<div class="col-md-6 mb-bt-4" align="center">
 						<br>
@@ -228,7 +226,6 @@
 </script>
 
 
-<!-- Customer Register QR script disabled per request
 <script type="text/javascript">
   var canvas = new QRious({
     element: document.getElementById('qr-customer'),
@@ -298,7 +295,6 @@
     false
   );
 </script>
--->
 @if(Auth::guard('agent')->check() || Auth::guard('admin')->check())
 <script type="text/javascript">
   var canvas = new QRious({

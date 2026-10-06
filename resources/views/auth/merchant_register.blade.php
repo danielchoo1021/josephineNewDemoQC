@@ -46,14 +46,20 @@
         <div class="container-box">
             <form method="POST" action="{{ route('register') }}" id="register-form" enctype="multipart/form-data">
                 @csrf
-                <h3 align="center" class="header-login">{{ isset($data['lang']['lang']['register_account']) ? $data['lang']['lang']['register_account'] :'Register Account' }}</h3>
+                <h3 align="center" class="header-login">
+                    @if(($registerLevel ?? '2') == '1')
+                        {{ isset($data['lang']['lang']['register_member_account']) ? $data['lang']['lang']['register_member_account'] :'Register Member Account' }}
+                    @else
+                        {{ isset($data['lang']['lang']['register_agent_account']) ? $data['lang']['lang']['register_agent_account'] :'Register Agent Account' }}
+                    @endif
+                </h3>
                 <br>
                 <div class="register-page merchant">
                     <div class="form-group">
                         @if($errors->any())
                           <div class="alert alert-danger">{!! implode('<br/>', $errors->all(':message')) !!}</div>
                         @endif
-                        <input type="hidden" name="role" value="2">
+                        <input type="hidden" name="role" value="{{ ($registerLevel ?? '2') == '1' ? '1' : '2' }}">
                         <input type="hidden" name="lvl" value="{{ $registerLevel ?? '2' }}">
                     </div>
 
