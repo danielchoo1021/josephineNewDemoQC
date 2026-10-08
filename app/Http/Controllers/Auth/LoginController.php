@@ -23,7 +23,9 @@ class LoginController extends Controller
     |
     */
 
-    use AuthenticatesUsers;
+    use AuthenticatesUsers {
+        sendFailedLoginResponse as protected defaultFailedLoginResponse;
+    }
 
     /**
      * Where to redirect users after login.
@@ -127,7 +129,7 @@ class LoginController extends Controller
             ]);
         }
 
-        return parent::sendFailedLoginResponse($request);
+        return $this->defaultFailedLoginResponse($request);
     }
 
     /**
