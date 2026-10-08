@@ -143,7 +143,7 @@
             @csrf
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">
-                        {{ isset($data["lang"]["lang"]["please_enter_your_phone"]) ? $data["lang"]["lang"]["please_enter_your_phone"] : "Please enter your phone" }}
+                        {{ isset($data["lang"]["lang"]["please_enter_your_email"]) ? $data["lang"]["lang"]["please_enter_your_email"] : "Please enter your email" }}
                     </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -152,9 +152,9 @@
                 <div class="modal-body" align="left">
                     <div class="form-group">
                         <label>
-                            {{ isset($data["lang"]["lang"]["phone"]) ? $data["lang"]["lang"]["phone"] : "Phone" }}
+                            {{ isset($data["lang"]["lang"]["email"]) ? $data["lang"]["lang"]["email"] : "Email" }}
                         </label>
-                        <input type="text" class="form-control forget_phone" name="forget_phone" placeholder="{{ isset($data['lang']['lang']['example']) ? $data['lang']['lang']['example'] :'例'}}: 0121234567" onkeypress="return isNumberKey(event)">
+                        <input type="email" class="form-control forget_email" name="forget_email" placeholder="example@email.com" required>
                     </div>
                 </div>
                 <div class="modal-footer">

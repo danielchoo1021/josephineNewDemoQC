@@ -7,7 +7,7 @@
 		<hr>
 		<form method="POST" action="{{ route('resetPassword') }}">
 			@csrf
-			<input type="hidden" name="aid" value="{{ md5($account->id) }}">
+			<input type="hidden" name="token" value="{{ $token }}">
 			<div class="form-group">
 				<label>{{ isset($data['lang']['lang']['new_password']) ? $data['lang']['lang']['new_password'] :'New Password' }}</label>
 				<input type="password" name="new_password" class="form-control" placeholder="{{ isset($data['lang']['lang']['new_password']) ? $data['lang']['lang']['new_password'] :'New Password' }}">

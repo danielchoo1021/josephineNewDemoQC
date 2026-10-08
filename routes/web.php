@@ -220,7 +220,8 @@ Route::post('/getShippingFee', 'AjaxController@getShippingFee')->name('getShippi
 Route::post('/ForgetPasswordEmail', 'AjaxController@ForgetPasswordEmail')->name('ForgetPasswordEmail');
 
 // Route::get('/resetPassword/{code}', 'HomeController@resetPassword')->name('resetPassword');
-Route::post('/resetPasswordAction/{code}', 'HomeController@resetPasswordAction')->name('resetPasswordAction');
+// Disabled: reset any account's password from just md5(code), no token check. Password reset now goes through ForgetPassword / resetPassword with a one-time emailed token.
+// Route::post('/resetPasswordAction/{code}', 'HomeController@resetPasswordAction')->name('resetPasswordAction');
 Route::get('/Checkout', 'HomeController@checkout')->name('checkout');
 Route::get('/CheckoutMall', 'HomeController@checkout_mall')->name('checkout_mall');
 

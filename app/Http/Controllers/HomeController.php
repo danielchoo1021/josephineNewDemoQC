@@ -9316,168 +9316,179 @@ class HomeController extends Controller
                                       'type_three'=>$type_three]);
     }
 
+    /**
+     * Forgot password: ask for the account's email and send a reset link to it.
+     * The link carries a random one-time token (only its hash is stored), is valid
+     * for 60 minutes and is invalidated as soon as a new link is requested.
+     */
     public function SendForgotPasswordLink(Request $request)
     {
-        try{
+        $isChinese = ($_COOKIE['global_language'] ?? '') == '1';
 
-            \DB::beginTransaction();
+        $validator = Validator::make($request->all(), [
+            'forget_email' => ['required', 'email'],
+        ]);
 
-            $website_setting = WebsiteSetting::find(1);
-            $phone = $request->forget_phone[0] === '0' ? substr($request->forget_phone, 1) : $request->forget_phone;
-            $account = User::where('phone', $phone)->whereStatus(1)->first() ?? 
-                       Agent::where('phone', $phone)->whereStatus(1)->first();
+        if($validator->fails()){
+            Toastr::error($isChinese ? '请输入有效的电子邮件' : 'Please enter a valid email address');
+            return redirect()->route('login');
+        }
 
-            if(empty($account)){
-                Toastr::error($_COOKIE['global_language'] ?? '' == '1' ? '此手机号在我们的系统中不存在' : 'This phone does not exists in our system');
+        $email = strtolower(trim($request->forget_email));
+        $expires_in_minutes = 60;
+
+        $account = User::where('email', $email)->whereStatus(1)->first() ??
+                   Agent::where('email', $email)->whereStatus(1)->first();
+
+        if(empty($account->id)){
+            Toastr::error($isChinese
+                ? '找不到此账号，请检查您输入的电子邮件。'
+                : 'This account was not found or is not active. Please check the email you entered.');
+            return redirect()->route('login');
+        }
+
+        if(!empty($account->id)){
+            try{
+                \DB::beginTransaction();
+
+                // only the newest link works
+                ForgetPasswordRecord::where('code', $account->code)
+                                    ->whereNull('link_used')
+                                    ->whereStatus(1)
+                                    ->update(['status' => 0]);
+
+                $token = \Illuminate\Support\Str::random(64);
+
+                $record = new ForgetPasswordRecord();
+                $record->code = $account->code;
+                $record->link = hash('sha256', $token);
+                $record->save();
+
+                $website_setting = WebsiteSetting::find(1);
+                $website_name = !empty($website_setting->website_name) ? $website_setting->website_name : config('app.name');
+                $company_name = !empty($website_setting->invoice_name) ? $website_setting->invoice_name : $website_name;
+
+                Mail::to($account->email)->send(new \App\Mail\ResetPasswordLink(
+                    $account->f_name,
+                    route('ForgetPassword', $token),
+                    $website_name,
+                    $company_name,
+                    $expires_in_minutes,
+                    $isChinese
+                ));
+
+                \DB::commit();
+            }catch (\Throwable $e){
+                \DB::rollback();
+                \Log::error('Forgot password email failed: '.$e->getMessage());
+
+                Toastr::error($isChinese ? '暂时无法发送邮件，请稍后再试' : 'Unable to send the email right now. Please try again later.');
                 return redirect()->route('login');
             }
-
-            // send phone
-            if($account->phone[0] === '0'){
-                $send_phone = $account->country_code.$account->phone;
-            }else{
-                $send_phone = $account->country_code.'0'.$account->phone;
-            }
-
-            // message
-            $language = $_COOKIE['global_language'] ?? '';
-            $resetLink = route('ForgetPassword', md5($account->code));
-            if($language === '1'){
-                $message = "来自 " . $website_setting->website_name . "\n"
-                           . "密码重置请求。如果您没有请求此操作，可以忽略此消息。\n"
-                           . "请点击下面的链接重置您的密码：\n\n"
-                           . $resetLink . "\n\n"
-                           . "谢谢您.";
-
-            }else{
-                $message = "From ".$website_setting->website_name."\n"
-                           . "Password Reset Request. If you didn't request this, you can ignore this message.\n"
-                           . "Kindly click the link below to reset your password:\n\n"
-                           . $resetLink . "\n\n"
-                           . "Thank You.";
-            }
-
-
-            $params=array(
-                'token' => 'bibn00stpx5dw8h7',
-                'to' => $send_phone,
-                'body' => $message
-            );
-            $curl = curl_init();
-            curl_setopt_array($curl, array(
-              CURLOPT_URL => "https://api.ultramsg.com/instance66054/messages/chat",
-              CURLOPT_RETURNTRANSFER => true,
-              CURLOPT_ENCODING => "",
-              CURLOPT_MAXREDIRS => 10,
-              CURLOPT_TIMEOUT => 30,
-              CURLOPT_SSL_VERIFYHOST => 0,
-              CURLOPT_SSL_VERIFYPEER => 0,
-              CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-              CURLOPT_CUSTOMREQUEST => "POST",
-              CURLOPT_POSTFIELDS => http_build_query($params),
-              CURLOPT_HTTPHEADER => array(
-                "content-type: application/x-www-form-urlencoded"
-              ),
-            ));
-
-            $response = curl_exec($curl);
-            $err = curl_error($curl);
-
-            curl_close($curl);
-
-            // forget password log
-            $check = ForgetPasswordRecord::where('link', $resetLink)
-                                         ->whereNull('link_used')
-                                         ->whereStatus(1)
-                                         ->first();
-            if(empty($check)){
-                $insert = new ForgetPasswordRecord();
-                $insert->code = $account->code;
-                $insert->link = $resetLink;
-                $insert->save();
-            }
-
-            \DB::commit();
-
-            Toastr::success($_COOKIE['global_language'] ?? '' == '1' ? '请查看您的 WhatsApp 以获取重置密码的请求' : 'Please check your WhatsApp for the password reset request');
-            return redirect()->route('login');
-
-        }catch (\Exception $e){
-            \DB::rollback();
-            return $e->getMessage();
-        }catch(\Error $e){
-            \DB::rollback();
-            return $e->getMessage();
         }
+
+        Toastr::success($isChinese
+            ? '重置密码的链接已发送到您的电子邮件，请查看您的邮箱。'
+            : 'A password reset link has been sent to your email. Please check your inbox.');
+        return redirect()->route('login');
     }
 
-   public function ForgetPassword($code)
+    /**
+     * The still-valid reset record for a token from the email link, or null.
+     */
+    protected function validPasswordResetRecord($token)
     {
-        $account = User::where(DB::raw('md5(users.code)'), $code)->first()?? 
-                   Agent::where(DB::raw('md5(agents.code)'), $code)->first();
+        if(empty($token)){
+            return null;
+        }
 
-        if(!$account || !$account->id){
+        return ForgetPasswordRecord::where('link', hash('sha256', $token))
+                                   ->whereStatus(1)
+                                   ->whereNull('link_used')
+                                   ->where('created_at', '>=', now()->subMinutes(60))
+                                   ->first();
+    }
+
+    protected function passwordResetAccount($record)
+    {
+        return User::where('code', $record->code)->first() ??
+               Agent::where('code', $record->code)->first();
+    }
+
+    public function ForgetPassword($token)
+    {
+        $record = $this->validPasswordResetRecord($token);
+
+        if(empty($record->id)){
+            Toastr::error(($_COOKIE['global_language'] ?? '') == '1'
+                ? '此重置密码链接无效或已过期，请重新申请。'
+                : 'This password reset link is invalid or has expired. Please request a new one.');
+            return redirect()->route('login');
+        }
+
+        $account = $this->passwordResetAccount($record);
+
+        if(empty($account->id)){
             return redirect()->route('home');
         }
 
-        $valid_link = ForgetPasswordRecord::where('code', $account->code)
-                                          ->where('status', '1')
-                                          ->whereNull('link_used')
-                                          ->first();
-
-        if(!$valid_link){
-            return redirect()->route('home');
-        }
-
-        return view('frontend.forget_password', compact('account'));
+        return view('frontend.forget_password', compact('account', 'token'));
     }
 
     public function resetPassword(Request $request)
     {
-        try{
+        $isChinese = ($_COOKIE['global_language'] ?? '') == '1';
 
+        $record = $this->validPasswordResetRecord($request->token);
+
+        if(empty($record->id)){
+            Toastr::error($isChinese
+                ? '此重置密码链接无效或已过期，请重新申请。'
+                : 'This password reset link is invalid or has expired. Please request a new one.');
+            return redirect()->route('login');
+        }
+
+        if(!$request->new_password){
+            Toastr::error($isChinese ? '请键入您的新密码' : 'Please key in your new password');
+            return redirect()->back();
+        }
+
+        if(strlen($request->new_password) < 8){
+            Toastr::error($isChinese ? '密码至少需要 8 个字符' : 'Password must be at least 8 characters');
+            return redirect()->back();
+        }
+
+        if($request->new_password !== $request->confirm_new_password){
+            Toastr::error($isChinese ? '密码不匹配！' : 'Password Does Not Match!');
+            return redirect()->back();
+        }
+
+        $account = $this->passwordResetAccount($record);
+
+        if(empty($account->id)){
+            return redirect()->route('home');
+        }
+
+        try{
             \DB::beginTransaction();
 
-            if(!$request->new_password){
-                Toastr::error($_COOKIE['global_language'] ?? '' == '1' ? '请键入您的新密码' : 'Please key in your new password');
-                return redirect()->back();
-            }
-
-            if($request->new_password !== $request->confirm_new_password){
-                Toastr::error($_COOKIE['global_language'] ?? '' == '1' ? '密码不匹配！' : 'Password Does Not Match!');
-                return redirect()->back();
-            }
-
-            $account = Agent::where(DB::raw('md5(id)'), $request->aid)->first() ?? 
-                       User::where(DB::raw('md5(id)'), $request->aid)->first();
-
-            if(!$account){
-                return redirect()->route('home');
-            }
-                
             $account->password = Hash::make($request->new_password);
             $account->save();
 
-            // forget password log
-            $update = ForgetPasswordRecord::where('code', $account->code)
-                                          ->whereNull('link_used')
-                                          ->whereStatus(1)
-                                          ->first();
-            $update->link_used = '1';
-            $update->save();
+            $record->link_used = '1';
+            $record->save();
 
             \DB::commit();
-
-            Toastr::success($_COOKIE['global_language'] ?? '' == '1' ? '密码修改成功' : 'Password Changed Successfully');
-            return redirect()->route('login');
-
-        }catch (\Exception $e){
+        }catch (\Throwable $e){
             \DB::rollback();
-            return $e->getMessage();
-        }catch(\Error $e){
-            \DB::rollback();
-            return $e->getMessage();
+            \Log::error('Reset password failed: '.$e->getMessage());
+
+            Toastr::error($isChinese ? '重置密码失败，请重试' : 'Unable to reset the password. Please try again.');
+            return redirect()->back();
         }
+
+        Toastr::success($isChinese ? '密码修改成功' : 'Password Changed Successfully');
+        return redirect()->route('login');
     }
 
     public function transfer_cash_to_topup(Request $request)
