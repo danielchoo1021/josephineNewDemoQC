@@ -9319,7 +9319,8 @@ class HomeController extends Controller
     /**
      * Forgot password: ask for the account's email and send a reset link to it.
      * The link carries a random one-time token (only its hash is stored), is valid
-     * for 60 minutes and is invalidated as soon as a new link is requested.
+     * for 60 minutes. A new link can only be requested 5 minutes after the last unused one,
+     * and a successful reset retires every other pending link for that account.
      */
     public function SendForgotPasswordLink(Request $request)
     {
@@ -9347,15 +9348,28 @@ class HomeController extends Controller
             return redirect()->route('login');
         }
 
+        // A link was sent a moment ago and has not been used yet: ask them to check their
+        // inbox instead of sending another one (a used link does not block a new request).
+        $cooldown_minutes = 5;
+        $last_sent = ForgetPasswordRecord::where('code', $account->code)
+                                         ->whereNull('link_used')
+                                         ->whereStatus(1)
+                                         ->where('created_at', '>', now()->subMinutes($cooldown_minutes))
+                                         ->orderByDesc('created_at')
+                                         ->first();
+
+        if(!empty($last_sent->id)){
+            $wait = max(1, (int) ceil($last_sent->created_at->copy()->addMinutes($cooldown_minutes)->diffInSeconds(now()) / 60));
+
+            Toastr::warning($isChinese
+                ? '重置密码的链接已发送到您的电子邮件，请查看邮箱（包括垃圾邮件）。请在 '.$wait.' 分钟后再试。'
+                : 'A reset link was already sent to this email. Please check your inbox (and spam folder), or try again in '.$wait.' minute(s).');
+            return redirect()->route('login');
+        }
+
         if(!empty($account->id)){
             try{
                 \DB::beginTransaction();
-
-                // only the newest link works
-                ForgetPasswordRecord::where('code', $account->code)
-                                    ->whereNull('link_used')
-                                    ->whereStatus(1)
-                                    ->update(['status' => 0]);
 
                 $token = \Illuminate\Support\Str::random(64);
 
@@ -9477,6 +9491,12 @@ class HomeController extends Controller
 
             $record->link_used = '1';
             $record->save();
+
+            // any other emailed links for this account are no longer needed
+            ForgetPasswordRecord::where('code', $account->code)
+                                ->whereNull('link_used')
+                                ->whereStatus(1)
+                                ->update(['link_used' => '1']);
 
             \DB::commit();
         }catch (\Throwable $e){
