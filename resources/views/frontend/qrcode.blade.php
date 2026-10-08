@@ -71,6 +71,7 @@
 							</div>
 						</div>
 					</div>
+					{{-- Agent Register hidden for now
 					@if(Auth::guard('agent')->check() || Auth::guard('admin')->check())
 					<div class="col-md-6 mb-bt-4" align="center">
 						<br>
@@ -103,6 +104,7 @@
 						</div>
 					</div>
 					@endif
+					--}}
 				</div>
 			</div>
 
@@ -295,6 +297,7 @@
     false
   );
 </script>
+{{-- Agent Register QR script hidden for now
 @if(Auth::guard('agent')->check() || Auth::guard('admin')->check())
 <script type="text/javascript">
   var canvas = new QRious({
@@ -366,4 +369,5 @@
   );
 </script>
 @endif
+--}}
 @endsection

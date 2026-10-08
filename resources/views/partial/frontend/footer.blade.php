@@ -128,7 +128,7 @@
               <script>
                   document.write(new Date().getFullYear());
               </script>
-              {{ $data['website_name'] }} {{ !empty($data['company_registration_no']) ? $data['company_registration_no'] : '' }} | {{ isset($data['lang']['lang']['powered_by']) ? $data['lang']['lang']['powered_by'] :'Powered by' }} <a href="https://vesson.my" target="_blank" class="footer_trademark_text text-decoration-unset">Vesson.my</a> {{ isset($data['lang']['lang']['hidden_powered_by']) ? $data['lang']['lang']['hidden_powered_by'] :'' }}
+              {{ $data['website_name'] }} {{ !empty($data['company_registration_no']) ? $data['company_registration_no'] : '' }} | {{ !empty($data['web_setting']->invoice_name) ? $data['web_setting']->invoice_name : $data['website_name'] }}
           </p>
         </div>
       </div>
