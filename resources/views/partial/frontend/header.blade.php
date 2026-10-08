@@ -195,6 +195,8 @@ Request::segment(1) == 'ForgetPassword')
                                 </div>
                             </div> -->
                         @else
+                            <div class="gtranslate_wrapper mobile-gtranslate-wrapper"></div>
+                            {{-- Duplicate profile icon + login popup removed from the mobile language slot (the real one is in the next block)
                             <a class="menu-icon -cart top-profile-btn" href="#">
                                 <img src="{{ asset('images/general/icon_user.png') }}" width="33px" alt="User Icon">
                             </a>
@@ -219,6 +221,7 @@ Request::segment(1) == 'ForgetPassword')
                                     </a>
                                 </div>
                             </div>
+                            --}}
                         @endif
                     </div>
 
