@@ -3249,12 +3249,23 @@ class GlobalController extends Controller
             foreach($get_packages as $get_package){
                 foreach($get_package->get_packages as $package){
                     if(!empty($package->voucher_id)){
+                        // My Vouchers and checkout read the title / code / amount from the applied
+                        // row itself, so copy them from the promotion (as the other issuers do).
+                        $voucher = Promotion::find($package->voucher_id);
+
                         for($v=0; $v<$package->quantity; $v++){
                             $applied_promotions = new AppliedPromotion();
                             $applied_promotions->promotion_id = $package->voucher_id;
                             $applied_promotions->user_id = $transaction->user_id;
                             $applied_promotions->transaction_id = $transaction->transaction_no;
                             $applied_promotions->status = 99;
+                            if(!empty($voucher->id)){
+                                $applied_promotions->promotion_title = $voucher->promotion_title;
+                                $applied_promotions->image = $voucher->image;
+                                $applied_promotions->discount_code = $voucher->discount_code;
+                                $applied_promotions->amount_type = $voucher->amount_type;
+                                $applied_promotions->amount = $voucher->amount;
+                            }
                             $applied_promotions->save();
                         }
                     }
