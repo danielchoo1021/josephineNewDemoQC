@@ -57,6 +57,8 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'strict' => false,
+            // optional: lets a local copy of a phpMyAdmin dump (TIMESTAMPs exported as +00:00) show the same times as production
+            'timezone' => env('DB_TIMEZONE'),
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
