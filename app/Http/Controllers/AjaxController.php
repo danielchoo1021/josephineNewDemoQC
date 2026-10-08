@@ -903,7 +903,13 @@ class AjaxController extends Controller
         }
 
         if(!empty($request->use)){
-          $update = AppliedPromotion::find($request->apid);
+          // only the account that holds the voucher can use it
+          $update = AppliedPromotion::where('id', $request->apid)
+                                    ->where('user_id', $BuyerCode)
+                                    ->first();
+          if(empty($update->id)){
+            return 8;
+          }
           $update = $update->update(['status'=>'1']);
           return "ok";
         }
@@ -946,6 +952,18 @@ class AjaxController extends Controller
                 ->first();
         }
         if(!empty($promotion->id)){
+            // A referral voucher can only be used by an account it was credited to. Typing
+            // the discount code is not enough, and guests (no account) never hold one.
+            if($promotion->is_referral_voucher == 1){
+                $holdsVoucher = is_string($BuyerCode) && AppliedPromotion::where('promotion_id', $promotion->id)
+                                                                         ->where('user_id', $BuyerCode)
+                                                                         ->whereIn('status', ['99', '1'])
+                                                                         ->exists();
+                if(!$holdsVoucher){
+                    return 8;
+                }
+            }
+
             // if($promotion->free_shipping == 1){
             //     $checkOwn = AppliedPromotion::where('status', '99')
             //                                 ->where('promotion_id', $promotion->id)

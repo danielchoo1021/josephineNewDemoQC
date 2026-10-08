@@ -1537,6 +1537,10 @@ $('.apply-discount').click( function(e){
 					$('.error-message-promo').html('Promotion Code out of limit.');
 					$('.error-message-promo').show();
 					return false;		       			
+			   	}else if(response == 7 || response == 8){
+			   		$('.error-message-promo').html('This voucher can only be used by the account it was issued to. Please log in to that account.');
+			   		$('.error-message-promo').show();
+			   		return false;
 			   	}else{
 				   	location.reload();
 			   	}

@@ -299,6 +299,10 @@
            processData: false,
            success: function(response){
                 $('.loading-gif').hide();
+                if(response == 8){
+                    toastr.error('This voucher can only be used by the account it was issued to.');
+                    return false;
+                }
                 toastr.success('成功使用优惠券！');
            }
         });
@@ -343,6 +347,10 @@
 				   }else if(response == 5){
 					$('.error-message-promo').html('Promotion Code out of limit.');
 					return false;		       			
+				   }else if(response == 7 || response == 8){
+				   	$('.error-message-promo').html('This voucher can only be used by the account it was issued to. Please log in to that account.');
+				   	$('.error-message-promo').show();
+				   	return false;
 				   }else{
 					   location.reload();
 					   if(response[1] == 'Percentage'){

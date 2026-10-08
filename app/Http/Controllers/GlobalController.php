@@ -4440,6 +4440,12 @@ class GlobalController extends Controller
                                            ->orderBy('created_at', 'DESC')
                                            ->first();
 
+        // A referral voucher is never valid for a visitor without an account.
+        if(!empty($applied_voucher->get_voucher_detail->is_referral_voucher)
+           && !User::where('code', $code)->exists()
+           && !Agent::where('code', $code)->exists()){
+            $applied_voucher = null;
+        }
 
         $totalDiscount = 0;
         $discount_code = NULL;
