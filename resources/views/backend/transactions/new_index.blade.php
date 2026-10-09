@@ -634,11 +634,13 @@
 							<a href="{{ route('download_invoice', $transaction->transaction_no) }}" class="btn btn-outline-info btn-sm" title="{{ isset($data['backendlang']['backendlang']['Download_Invoice']) ? $data['backendlang']['backendlang']['Download_Invoice'] :'' }}">
 								<i class="bi bi-download"></i>
 							</a>
+							{{-- e-Invoice upload button hidden for now
 							@if(!empty($settingEinvoice) && $settingEinvoice->status == 1 && (empty($transaction->te_status) || $transaction->te_status == 'error'))
 							<a href="#" onClick="sendEinvoice('{{ $transaction->transaction_no }}')" class="btn btn-outline-info btn-sm" title="{{ isset($data['backendlang']['backendlang']['Send_eInvoice']) ? $data['backendlang']['backendlang']['Send_eInvoice'] :'' }}">
 								<i class="bi bi-cloud-upload"></i>
 							</a>
 							@endif
+							--}}
 							@endif
 
 							@if($transaction->status != '95' && $transaction->status != '96' && $transaction->cod_address != 1)
@@ -911,6 +913,7 @@
 		}
 	});
 
+	{{-- e-Invoice upload hidden for now
 	function sendEinvoice(transactionNo) {
 		$('.loading-gif').show();
 		if (transactionNo) {
@@ -935,6 +938,7 @@
 			});
 		}
 	}
+	--}}
 </script>
 
 <script type="text/javascript">

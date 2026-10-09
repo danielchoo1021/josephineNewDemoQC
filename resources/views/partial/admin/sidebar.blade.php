@@ -939,6 +939,7 @@
                                 </a>
 
                                 <ul class="submenu submenu-level-2">
+                                    {{-- e-Invoice Setting hidden for now
                                     @if(!empty($data['permission']['permission'][Auth::guard($data['userGuardRole'])->user()->permission_lvl]['setting-einvoice']))
                                     <li class="submenu-item {{ (Request::segment(1) == 'setting_einvoice') ? 'active' : '' }}">
                                         <a href="{{ route('setting_einvoice') }}" class="submenu-link">
@@ -946,6 +947,7 @@
                                         </a>
                                     </li>
                                     @endif
+                                    --}}
 
                                     @if(!empty($data['permission']['permission'][Auth::guard($data['userGuardRole'])->user()->permission_lvl]['setting-auto-withdrawal']))
                                     <li class="submenu-item {{ (Request::segment(1) == 'setting_auto_withdrawal') ? 'active' : '' }}">

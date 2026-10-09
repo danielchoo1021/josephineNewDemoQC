@@ -278,7 +278,8 @@ Route::post('/admin_login', 'Auth\AdminLoginController@login')->name('admin_logi
 Route::post('/admin_logout', 'Auth\AdminLoginController@admin_logout')->name('admin_logout');
 
 Route::group(['middleware' => 'auth:admin,merchant,staff'], function () {
-	Route::post('/sendTransactionEinvoice','Backend\AjaxController@sendTransactionEinvoice')->name('sendTransactionEinvoice');
+	// e-Invoice disabled for now
+	// Route::post('/sendTransactionEinvoice','Backend\AjaxController@sendTransactionEinvoice')->name('sendTransactionEinvoice');
 
 	Route::get('/transactions/create_point', 'Backend\TransactionController@create_transaction_points')->name('create_transaction_points');
 	Route::post('get_remaining_points', 'Backend\AjaxController@get_remaining_points')->name('get_remaining_points');
@@ -642,8 +643,9 @@ Route::group(['middleware' => 'auth:admin,merchant,staff'], function () {
 
 	Route::get('topup_invoice/{topup_no}', 'Backend\TransactionController@topup_invoice')->name('topup_invoice');
 
-  Route::get('setting_einvoice', 'Backend\SettingController@setting_einvoice')->name('setting_einvoice');
-  Route::post('setting_einvoice', 'Backend\SettingController@setting_einvoice_save')->name('setting_einvoice_save');
+  // e-Invoice disabled for now
+  // Route::get('setting_einvoice', 'Backend\SettingController@setting_einvoice')->name('setting_einvoice');
+  // Route::post('setting_einvoice', 'Backend\SettingController@setting_einvoice_save')->name('setting_einvoice_save');
 
 	Route::get('setting_banner', 'Backend\SettingController@setting_banner')->name('setting_banner');
 	Route::get('setting_signature_dish', 'Backend\SettingController@setting_signature_dish')->name('setting_signature_dish');
