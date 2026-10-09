@@ -85,7 +85,7 @@
 										<div class="input-group">
 								            <input type="text" name="name" class="form-control search-query" placeholder="{{ isset($data['lang']['lang']['search']) ? $data['lang']['lang']['search'] :'搜索'}}" value="{{ !empty(request('name')) ? request('name') : '' }}" style="border: 1px solid #ced4da;">
 								            <span class="input-group-btn" style="width: auto;">
-								                <button type="submit" class="btn btn-shadow btn-white search-button set_button set_text" style="outline: none; height: 100%; border-top-right-radius: 25px !important; border-bottom-right-radius: 25px !important; border-top-left-radius: 0px; border-bottom-left-radius: 0px; padding: 8px 15px;">
+								                <button type="submit" class="btn btn-primary search-button set_button set_text" style="outline: none; height: 100%; border-top-right-radius: 25px !important; border-bottom-right-radius: 25px !important; border-top-left-radius: 0px; border-bottom-left-radius: 0px; padding: 8px 15px;">
 								                    <span class="ace-icon fa fa-search icon-on-right bigger-110" style="display: none;"></span>
 								                    {{ isset($data['lang']['lang']['search']) ? $data['lang']['lang']['search'] :'搜索'}}
 								                </button>
@@ -98,25 +98,25 @@
 									<div class="row">
 										<div class="col-sm-3 mt-2">
 											<a href="{{ route('MyAffiliate', [$code]) }}"
-											   class="btn btn-shadow btn-block set_button set_text {{ (!empty(request('generation')) && request('generation') == 4) ? 'active' : '' }} search-generation">
+											   class="btn btn-primary btn-block set_button set_text {{ (!empty(request('generation')) && request('generation') == 4) ? 'active' : '' }} search-generation">
 												{{ isset($data['lang']['lang']['clear_search']) ? $data['lang']['lang']['clear_search'] :'清除搜索'}}
 											</a>
 										</div>
 										<div class="col-sm-3 mt-2">
 											<a href="{{ route('MyAffiliate', [$code, 'generation=1']) }}"
-											   class="btn btn-shadow btn-block set_button set_text {{ (!empty(request('generation')) && request('generation') == 1) ? 'active' : '' }} search-generation">
+											   class="btn btn-primary btn-block set_button set_text {{ (!empty(request('generation')) && request('generation') == 1) ? 'active' : '' }} search-generation">
 												{{ isset($data['lang']['lang']['first_gen']) ? $data['lang']['lang']['first_gen'] :'第 1 级'}}
 											</a>
 										</div>
 										<div class="col-sm-3 mt-2">
 											<a href="{{ route('MyAffiliate', [$code, 'generation=2']) }}"
-											   class="btn btn-shadow btn-block set_button set_text {{ (!empty(request('generation')) && request('generation') == 2) ? 'active' : '' }} search-generation">
+											   class="btn btn-primary btn-block set_button set_text {{ (!empty(request('generation')) && request('generation') == 2) ? 'active' : '' }} search-generation">
 												{{ isset($data['lang']['lang']['sec_gen']) ? $data['lang']['lang']['sec_gen'] :'第 2 级'}}
 											</a>
 										</div>
 										<div class="col-sm-3 mt-2">
 											<a href="{{ route('MyAffiliate', [$code, 'generation=3']) }}"
-											   class="btn btn-shadow btn-block set_button set_text {{ (!empty(request('generation')) && request('generation') == 3) ? 'active' : '' }} search-generation">
+											   class="btn btn-primary btn-block set_button set_text {{ (!empty(request('generation')) && request('generation') == 3) ? 'active' : '' }} search-generation">
 												{{ isset($data['lang']['lang']['third_gen']) ? $data['lang']['lang']['third_gen'] :'第 3 级'}}
 											</a>
 										</div>
@@ -210,8 +210,8 @@
 
 							<div id="tree-tab" class="tab-pane">
 								<div class="row" style="overflow: auto;">
-									<div class="col-xs-12">
-										<figure>
+									<div class="col-12">
+										<figure style="margin: 0; text-align: center;">
 										  <ul class="tree">
 										    	<li>
 										    		<span>
