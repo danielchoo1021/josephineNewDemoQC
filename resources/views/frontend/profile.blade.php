@@ -319,6 +319,7 @@
 
 		<div class="form-group container-box profile-setting-list">
 			{{-- help agent register --}}
+			{{-- Register Agent and My Products Stock hidden for now
 			@if (Auth::guard('agent')->check())
 			<li>
 				<a href="{{ route('merchant_register', ['r' => 1]) }}" class="profile-word">
@@ -339,6 +340,7 @@
 				</a>
 			</li>
 			@endif
+			--}}
 			<li>
 				<a href="{{ route('my_voucher') }}" class="profile-word">
 					{{ isset($data['lang']['lang']['my_voucher']) ? $data['lang']['lang']['my_voucher'] :'我的优惠券'}}
