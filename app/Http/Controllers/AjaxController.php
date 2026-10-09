@@ -2930,6 +2930,9 @@ class AjaxController extends Controller
         try {
             \DB::beginTransaction();
 
+            // Auto withdrawal is switched off for now: remove this line to allow agents to turn it on again.
+            throw new \Exception('Auto withdrawal is currently disabled');
+
             if (Auth::guard('agent')->check()) {
                 $current_agent = Agent::where('code', Auth::guard('agent')->user()->code)->first();
 

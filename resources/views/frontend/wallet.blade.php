@@ -100,6 +100,7 @@
 			<div class="row">
 				<div class="col-sm-12">
 					@if(Auth::guard('agent')->check() && $data['web_setting']->bonus_agent_enable == 1)
+					 	{{-- Auto Withdrawal toggle hidden and disabled for now
 					 	@if($website_setting->auto_withdrawal_enable == 1)
 							<div class="form-group container-box">
 								<div class="row">
@@ -116,6 +117,7 @@
 								</div>
 							</div>
 						@endif
+						--}}
 					@endif
 					<div class="form-group container-box">
 						<div class="form-group">
@@ -412,6 +414,7 @@
 									</form>
 								</div>
 								@endif
+								{{-- Point Wallet Balance hidden for now
 								<div class="col-md-6 pt-4">
 									<div class="form-group container-box">
 										<h5>
@@ -419,6 +422,7 @@
 										</h5>
 									</div>
 								</div>
+								--}}
 							</div>
 						</div>
 						
@@ -560,11 +564,13 @@
 												Topup Wallet
 											</a>
 										</li>
+										{{-- Point tab hidden for now
 										<li class="parent_payment_method">
 											<a data-toggle="tab" class="payment_method f-15" data-id="3" href="#pv-tab">
 												Point
 											</a>
 										</li>
+										--}}
 									</ul>
 								</div>
 							</div>

@@ -4849,7 +4849,8 @@ class GlobalController extends Controller
     public static function test_auto_withdrawal(){
         $website_setting = WebsiteSetting::first();
 
-        if($website_setting->auto_withdrawal_enable == 1){
+        // Auto withdrawal is switched off for now (remove "false &&" to bring it back).
+        if(false && $website_setting->auto_withdrawal_enable == 1){
             if (in_array(date('d'), [$website_setting->auto_withdrawal_day, $website_setting->auto_withdrawal_day_2])) {
                 $agents_with_auto_withdrawal = Agent::where('withdrawal_type', '1')
                                                     ->where('status', '1')
