@@ -68,6 +68,7 @@
 						</div>
 					</div>
 					
+					{{-- Agent Account hidden: everyone joins as a member first
 					<div class="row">
 						<div class="col-md-4 offset-md-4" align="center" style="margin-top: 10px; margin-bottom: 10px;">
 							<div class="form-control">
@@ -85,6 +86,7 @@
 							</div>
 						</div>
 					</div>
+					--}}
 
 					<div class="row">
 						<div class="col-md-4 offset-md-4" align="center" style="margin-top: 10px; margin-bottom: 10px;">

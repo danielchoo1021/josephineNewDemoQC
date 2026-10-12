@@ -97,6 +97,10 @@ class RegisterController extends Controller
      */
     public function register(Request $request)
     {
+        // Public registration always creates a Member; agents come from buying an upgrade
+        // package. This also stops a hand-edited form from creating an agent.
+        $request->merge(['role' => '1', 'lvl' => '1']);
+
         $this->validator($request->all())->validate();
 
         // An already-logged-in agent/merchant/admin can use this same form to

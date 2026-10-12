@@ -141,7 +141,7 @@
 						<td><span class="badge bg-warning">{{ isset($data['backendlang']['backendlang']['Pending']) ? $data['backendlang']['backendlang']['Pending'] :'' }}</span></td>
 						<td>
 							@if(!empty($data['permission']['permission'][Auth::guard($data['userGuardRole'])->user()->permission_lvl]['agent-approve-reject']))
-								<a href="#" class="change_action btn btn-sm btn-outline-success" data-id="1" title="{{ isset($data['backendlang']['backendlang']['Approve']) ? $data['backendlang']['backendlang']['Approve'] :'' }}">
+								<a href="#" class="change_action btn btn-sm btn-outline-success" data-id="1" data-no-order="{{ empty($agent->register_transaction) ? 1 : 0 }}" title="{{ isset($data['backendlang']['backendlang']['Approve']) ? $data['backendlang']['backendlang']['Approve'] :'' }}">
 									<i class="ace-icon bi bi-shield-check bigger-130"></i>
 								</a>
 								<a href="#" class="change_action btn btn-sm btn-outline-danger" data-id="98" title="{{ isset($data['backendlang']['backendlang']['Reject']) ? $data['backendlang']['backendlang']['Reject'] :'' }}">
@@ -177,7 +177,10 @@
 		fd.append('action_id', action_id);
 		fd.append('mid', mid);
 
-		if(action_id == '1'){
+		if(action_id == '1' && ele.data('no-order') == 1){
+			// registered without any order / package: make the admin look twice
+			var action_confirm = confirm('WARNING: this agent has not bought any registration package.' + String.fromCharCode(10) + 'Members should join as customers first and upgrade by buying a package.' + String.fromCharCode(10) + String.fromCharCode(10) + 'Approve this agent anyway?');
+		}else if(action_id == '1'){
 			var action_confirm = confirm("{{ isset($data['backendlang']['backendlang']['Approve_this_agent']) ? $data['backendlang']['backendlang']['Approve_this_agent'] :'' }}");
 		}else{
 			var action_confirm = confirm("{{ isset($data['backendlang']['backendlang']['Reject_this_agent']) ? $data['backendlang']['backendlang']['Reject_this_agent'] :'' }}");

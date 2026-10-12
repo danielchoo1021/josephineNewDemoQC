@@ -246,6 +246,16 @@ class HomeController extends Controller
             }
         }
 
+        // Everyone joins as a member first and becomes an agent by buying an upgrade
+        // package, so any agent-registration link (no lvl, or lvl=2) goes to the member form.
+        if(request('lvl', '2') != '1'){
+            $member_params = ['lvl' => 1];
+            if(!empty(request('p'))){
+                $member_params['p'] = request('p');
+            }
+            return redirect()->route('merchant_register', $member_params);
+        }
+
         // r = help agent register
         if(!request()->has('r')) {
             if(Auth::guard('agent')->check() || Auth::guard('web')->check() || Auth::guard('admin')->check()){
