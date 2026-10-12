@@ -26,3 +26,4 @@ DBBackup/
 
 # macOS temporary files
 .DS_Store
+database/launch_cleanup.sql
