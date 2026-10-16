@@ -664,6 +664,7 @@ input[name="payment_id"]:checked + img {
 										<b class="discount_amount">RM 0.00</b>
 									@endif
 									<input type="hidden" name="hidden_discount" class="hidden_discount" value="{{ !empty($applied_discount_amount) ? $applied_discount_amount : '' }}">
+									<input type="hidden" id="voucher_free_shipping" value="{{ (!empty($applied_voucher->get_voucher_detail->id) && $applied_voucher->get_voucher_detail->free_shipping == '1') ? 1 : 0 }}">
 								</div>
 							</div>
 						</div>
@@ -1855,7 +1856,9 @@ $('.self-pickup').click(function (e){
 	if($(this).prop('checked') == true){
 
 		$('.shipping_amount').html('RM 0.00');
-		currentTotal = parseFloat(sub);
+		// a free-shipping voucher has nothing to take off once shipping is 0; any other voucher still applies
+		var pickup_discount = ($('#voucher_free_shipping').val() == '1') ? 0 : (parseFloat($('.hidden_discount').val()) || 0);
+		currentTotal = Math.max(parseFloat(sub) - pickup_discount, 0);
 
 		if(parent_payment_method == 1){
 			// alert(currentTotal);
@@ -1872,7 +1875,8 @@ $('.self-pickup').click(function (e){
 		validateVoucherAfterCartChange();
 	}else{
 		$('.shipping_amount').html('RM '+parseFloat(shipping_fee).toFixed(2));
-		currentTotal = parseFloat(sub) + parseFloat(shipping_fee);
+		var delivery_discount = parseFloat($('.hidden_discount').val()) || 0;
+		currentTotal = Math.max(parseFloat(sub) + parseFloat(shipping_fee) - delivery_discount, 0);
 
 		if(parent_payment_method == 1){
 			$('.processing_amount').html('RM '+parseFloat(currentTotal * 1.6 / 100).toFixed(2));
