@@ -4413,9 +4413,11 @@ class HomeController extends Controller
             return Redirect::back()->withInput($request->all())->withErrors('Insufficient balance');
         }
 
-        if($amount < 100){
-            // return 123;
-            return Redirect::back()->withInput($request->all())->withErrors('Minimum Withdrawal Amount as RM 100.00');
+        // Same limit the wallet page shows: the "minimum withdrawal" website setting (RM 100 if never set).
+        $min_setting = WebsiteSetting::find(1);
+        $min_withdrawal = !is_null($min_setting->min_withdrawal_amount ?? null) ? (float) $min_setting->min_withdrawal_amount : 100;
+        if($min_withdrawal > 0 && $amount < $min_withdrawal){
+            return Redirect::back()->withInput($request->all())->withErrors('Minimum Withdrawal Amount as RM '.number_format($min_withdrawal, 2));
         }
 
         $check = WithdrawalTransaction::where('user_id', Auth::user()->code)
